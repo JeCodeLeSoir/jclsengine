@@ -7,7 +7,7 @@ export class Behavior_Instance {
     static SCREEN_HEIGHT;
     static SCREEN_WIDTH;
 }
-const __Debug__ = true;
+const __Debug__ = false;
 new Behavior_Instance();
 (() => {
     const canvas = document.querySelector('canvas');
