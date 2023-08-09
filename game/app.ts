@@ -11,7 +11,7 @@ export class Behavior_Instance {
   static SCREEN_WIDTH: number;
 }
 
-const __Debug__ = true;
+const __Debug__ = false;
 
 new Behavior_Instance();
 
