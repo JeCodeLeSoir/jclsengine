@@ -1,0 +1,11 @@
+{
+    "watch": [
+        "**/*"
+    ],
+    "ext": "ts, json",
+    "ignore": [
+        "**/*.spec.ts",
+        "./sessions/*.json"
+    ],
+    "exec": "rm -rf ./build && npx tsc -b tsconfig.esm.json"
+}

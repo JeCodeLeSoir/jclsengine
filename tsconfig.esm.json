@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "noImplicitAny": false,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": false,
+        "strict": true,
+        "outDir": "./build",
+        "rootDir": "./game",
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/*"
+            ]
+        }
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
