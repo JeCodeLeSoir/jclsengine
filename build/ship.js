@@ -13,7 +13,7 @@ export var Input;
 })(Input || (Input = {}));
 export default class Ship extends Behavior {
     static instance;
-    Tag = "player";
+    Tag = "Player";
     IsPhysics = true;
     DisplayOrder = 2;
     image;
@@ -78,16 +78,22 @@ export default class Ship extends Behavior {
         });
     }
     Update(deltaTime) {
-        if (this.inputs[Input.forward]) {
+        const h = Behavior_Instance.SCREEN_HEIGHT;
+        const w = Behavior_Instance.SCREEN_WIDTH;
+        if (this.inputs[Input.forward]
+            && this.y - this.height / 2 > 0) {
             this.y -= this.speed * deltaTime;
         }
-        if (this.inputs[Input.backward]) {
+        if (this.inputs[Input.backward]
+            && this.y + this.height / 2 < h) {
             this.y += this.speed * deltaTime;
         }
-        if (this.inputs[Input.left]) {
+        if (this.inputs[Input.left]
+            && this.x - this.width / 2 > 0) {
             this.x -= this.speed * deltaTime;
         }
-        if (this.inputs[Input.right]) {
+        if (this.inputs[Input.right]
+            && this.x + this.width / 2 < w) {
             this.x += this.speed * deltaTime;
         }
         if (this.inputs[Input.space]) {

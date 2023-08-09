@@ -19,6 +19,9 @@ export default class Behavior {
     GetTag() {
         return this.Tag;
     }
+    SetTag(tag) {
+        this.Tag = tag;
+    }
     SetCollisionEnter(Enter) {
         this._collisionEnter = Enter;
     }

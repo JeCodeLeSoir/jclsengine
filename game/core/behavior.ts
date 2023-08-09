@@ -29,6 +29,10 @@ export default abstract class Behavior {
     return this.Tag;
   }
 
+  SetTag(tag: string) {
+    this.Tag = tag;
+  }
+
   SetCollisionEnter(Enter: boolean) {
     this._collisionEnter = Enter;
   }

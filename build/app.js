@@ -1,4 +1,5 @@
 import AsteroideSpawner from "./asteroideSpawner.js";
+import Enemy from "./enemy.js";
 import Ship from "./ship.js";
 import StarBackground from "./starBackground.js";
 import StartText from "./startText.js";
@@ -24,6 +25,7 @@ new Behavior_Instance();
     Behavior_Instance.SCREEN_HEIGHT = canvas.height;
     console.log(Behavior_Instance.SCREEN_WIDTH + "X" + Behavior_Instance.SCREEN_HEIGHT);
     Behavior_Instance.behaviors.push(new StartText());
+    Behavior_Instance.behaviors.push(new Enemy());
     Behavior_Instance.behaviors.push(new Ship());
     Behavior_Instance.behaviors.push(new AsteroideSpawner());
     Behavior_Instance.behaviors.push(new StarBackground());

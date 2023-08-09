@@ -5,6 +5,10 @@ import Ship from "./ship.js";
 export default class Missile extends Behavior {
     IsPhysics = true;
     Tag = "Missile";
+    inverted = false;
+    setInverted(inverted) {
+        this.inverted = inverted;
+    }
     image;
     height = 0;
     width = 0;
@@ -23,20 +27,44 @@ export default class Missile extends Behavior {
         });
     }
     Update(deltaTime) {
-        this.x += this.speed * deltaTime;
-        if (this.x > Behavior_Instance.SCREEN_WIDTH + (this.width / 2)) {
-            this.Destroy();
+        if (this.inverted) {
+            this.x -= this.speed * deltaTime;
+            if (this.x < -this.width / 2) {
+                this.Destroy();
+            }
+        }
+        else {
+            this.x += this.speed * deltaTime;
+            if (this.x > Behavior_Instance.SCREEN_WIDTH + (this.width / 2)) {
+                this.Destroy();
+            }
         }
     }
     OnDestroy() {
     }
     OnCollisionEnter(other) {
-        if (other.GetTag() === "Asteroide") {
-            this.Destroy();
-            Ship.instance.score += 100;
+        if (this.Tag === "Missile") {
+            if (other.GetTag() === "Asteroide") {
+                this.Destroy();
+                Ship.instance.score += 100;
+            }
+        }
+        else {
+            if (other.GetTag() === "Player") {
+                this.Destroy();
+                other.Destroy();
+            }
         }
     }
     Draw(ctx, deltaTime) {
-        ctx.drawImage(this.image, Math.round(this.x - this.width / 2), Math.round(this.y - this.height / 2));
+        if (this.inverted) {
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(this.image, Math.round(-this.x - this.width / 2), Math.round(this.y - this.height / 2));
+            ctx.restore();
+        }
+        else {
+            ctx.drawImage(this.image, Math.round(this.x - this.width / 2), Math.round(this.y - this.height / 2));
+        }
     }
 }

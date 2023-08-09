@@ -16,7 +16,7 @@ export default class Ship extends Behavior {
 
   static instance: Ship;
 
-  protected Tag: string = "player";
+  protected Tag: string = "Player";
   protected IsPhysics: boolean = true;
   protected DisplayOrder: number = 2;
 
@@ -96,18 +96,31 @@ export default class Ship extends Behavior {
   }
 
   Update(deltaTime: number) {
-    if (this.inputs[Input.forward]) {
+    const h = Behavior_Instance.SCREEN_HEIGHT;
+    const w = Behavior_Instance.SCREEN_WIDTH;
+
+    if (this.inputs[Input.forward]
+      && this.y - this.height / 2 > 0
+    ) {
       this.y -= this.speed * deltaTime;
     }
-    if (this.inputs[Input.backward]) {
+
+    if (this.inputs[Input.backward]
+      && this.y + this.height / 2 < h
+    ) {
       this.y += this.speed * deltaTime;
     }
-    if (this.inputs[Input.left]) {
+    if (this.inputs[Input.left]
+      && this.x - this.width / 2 > 0
+    ) {
       this.x -= this.speed * deltaTime;
     }
-    if (this.inputs[Input.right]) {
+    if (this.inputs[Input.right]
+      && this.x + this.width / 2 < w
+    ) {
       this.x += this.speed * deltaTime;
     }
+
     if (this.inputs[Input.space]) {
       if (this.cooldown <= 0) {
         this.cooldown = this.cooldownMax;
