@@ -1,26 +1,43 @@
-import AsteroideSpawner from "./asteroideSpawner.js";
+import { Behavior_Instance } from "./app.js";
 import Behavior from "./core/behavior.js";
 import Bounds, { Vector2 } from "./core/bounds.js";
-export default class Asteroide extends Behavior {
-  protected Tag: string = "Asteroide";
-  protected DisplayOrder: number = -1;
+import Missile from "./missile.js";
+
+export default class Enemy extends Behavior {
+
+  static instance: Enemy;
+
+  protected Tag: string = "player";
   protected IsPhysics: boolean = true;
+  protected DisplayOrder: number = 2;
 
   image: HTMLImageElement;
   height: number = 0;
   width: number = 0;
 
-  constructor(x: number, y: number) {
+  speed: number;
+  rotation: number;
+
+  cooldown: number = 0;
+  cooldownMax: number = 0.5;
+
+  score: number = 0;
+
+  constructor() {
     super();
-    this.x = x;
-    this.y = y;
+    this.x = 25;
+    this.y = Behavior_Instance.SCREEN_HEIGHT / 2;
+    this.speed = 150;
+    this.rotation = 0;
     this.image = new Image();
+
+    Enemy.instance = this;
   }
 
   Load() {
-    this.image.src = './asteroide.png';
-    this.image.addEventListener('load', () => {
+    this.image.src = './player.png';
 
+    this.image.addEventListener('load', () => {
       this.height = this.image.height;
       this.width = this.image.width;
 
@@ -30,13 +47,15 @@ export default class Asteroide extends Behavior {
 
       this.setIsLoaded(true);
     })
+
   }
 
   Update(deltaTime: number) {
-    this.x -= 60 * deltaTime;
-    if (this.x < - (this.width / 2)) {
-      this.Destroy();
-    }
+
+
+
+    this.cooldown -= deltaTime;
+    this.score += 0.025 * deltaTime;
   }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
@@ -47,10 +66,15 @@ export default class Asteroide extends Behavior {
   }
 
   OnDestroy(): void {
-    AsteroideSpawner.instance.AsteroideOnDestroy(this);
+    window.location.reload();
   }
 
   OnCollisionEnter(other: Behavior): void {
+
+    if (other.GetTag() === "player") {
+      this.Destroy();
+    }
+
     if (other.GetTag() === "Missile") {
       this.Destroy();
     }

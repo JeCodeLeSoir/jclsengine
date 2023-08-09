@@ -1,7 +1,6 @@
 import { Behavior_Instance } from "../app.js";
 import Bounds from "./bounds.js";
 
-
 export default abstract class Behavior {
 
   private _isLoaded: boolean = false;
@@ -20,6 +19,10 @@ export default abstract class Behavior {
   SetPosition(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+
+  GetIsPhysics() {
+    return this.IsPhysics;
   }
 
   GetTag(): string {
@@ -44,6 +47,9 @@ export default abstract class Behavior {
   }
 
   Load() { }
+
+  Init(ctx: CanvasRenderingContext2D) { }
+
   Update(deltaTime: number) { }
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) { }
 

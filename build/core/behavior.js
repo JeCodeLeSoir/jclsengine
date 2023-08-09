@@ -13,6 +13,9 @@ export default class Behavior {
         this.x = x;
         this.y = y;
     }
+    GetIsPhysics() {
+        return this.IsPhysics;
+    }
     GetTag() {
         return this.Tag;
     }
@@ -29,6 +32,7 @@ export default class Behavior {
         return this.DisplayOrder;
     }
     Load() { }
+    Init(ctx) { }
     Update(deltaTime) { }
     Draw(ctx, deltaTime) { }
     Destroy() {
