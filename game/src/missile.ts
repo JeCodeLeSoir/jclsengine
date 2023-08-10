@@ -39,7 +39,7 @@ export default class Missile extends jcls.Behavior {
         jcls.Vector2(this.position.x, this.position.y), new
         jcls.Vector2(this.width, 10));
 
-      this._clipExplosion.Load('./assets/sounds/8_bit_Explosion.mp3');
+      this._clipExplosion.Load('./assets/sounds/8bitexplosion.mp3');
 
       this.setIsLoaded(true);
     })
@@ -70,6 +70,9 @@ export default class Missile extends jcls.Behavior {
         this._soundEffect.PlayOneShot(this._clipExplosion);
         this.Destroy();
         Ship.instance.score += 100;
+      }
+      if (other.GetTag() === "Enemy") {
+        this._soundEffect.PlayOneShot(this._clipExplosion);
       }
     }
     else {

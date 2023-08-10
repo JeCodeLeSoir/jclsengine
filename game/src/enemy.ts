@@ -5,7 +5,7 @@ export default class Enemy extends jcls.Behavior {
 
   static instance: Enemy;
 
-  protected Tag: string = "player";
+  protected Tag: string = "Enemy";
   protected IsPhysics: boolean = true;
   protected DisplayOrder: number = 2;
 

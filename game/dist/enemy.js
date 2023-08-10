@@ -2,7 +2,7 @@ import * as jcls from "jclsengine";
 import Missile from "./missile.js";
 export default class Enemy extends jcls.Behavior {
     static instance;
-    Tag = "player";
+    Tag = "Enemy";
     IsPhysics = true;
     DisplayOrder = 2;
     image;
