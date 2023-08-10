@@ -9,7 +9,7 @@ let btnRun = document.getElementById("btn-run");
 btnRun?.addEventListener("click", () => {
     RunParent?.classList.add("hidden");
     let _clip = new jcls.Clip();
-    _clip.Load('./assets/musics/Deep In Space (Free Game Music).mp3');
+    _clip.Load('./assets/musics/Deep_In_Space_Free_Game_Music.mp3');
     let _soundEffect = new jcls.SoundEffect();
     _soundEffect.SetLoop(true);
     _soundEffect.PlayOneShot(_clip);
