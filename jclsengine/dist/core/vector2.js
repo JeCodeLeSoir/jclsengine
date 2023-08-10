@@ -61,66 +61,69 @@ export default class Vector2 {
     get SqrtMagnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
-    get magnitude() {
+    get Magnitude() {
         return Math.sqrt(this.SqrtMagnitude);
     }
-    get normalized() {
-        return new Vector2(this.x / this.magnitude, this.y / this.magnitude);
+    get Normalized() {
+        return new Vector2(this.x / this.Magnitude, this.y / this.Magnitude);
     }
-    set(x, y) {
+    Set(x, y) {
         this.x = x;
         this.y = y;
         return this;
     }
-    add(vector) {
+    Add(vector) {
         this.x += vector.x;
         this.y += vector.y;
         return this;
     }
-    subtract(vector) {
+    Subtract(vector) {
         this.x -= vector.x;
         this.y -= vector.y;
         return this;
     }
-    multiply(vector) {
+    Multiply(vector) {
         this.x *= vector.x;
         this.y *= vector.y;
         return this;
     }
-    divide(vector) {
+    Divide(vector) {
         this.x /= vector.x;
         this.y /= vector.y;
         return this;
     }
-    scale(vector) {
+    Scale(vector) {
         this.x *= vector.x;
         this.y *= vector.y;
         return this;
     }
-    dot(vector) {
+    Dot(vector) {
         return this.x * vector.x + this.y * vector.y;
     }
-    cross(vector) {
+    Cross(vector) {
         return this.x * vector.y - this.y * vector.x;
     }
-    distance(vector) {
-        return Math.sqrt(this.distanceSquared(vector));
+    Distance(vector) {
+        return Math.sqrt(this.DistanceSquared(vector));
     }
-    distanceSquared(vector) {
+    DistanceSquared(vector) {
         let dx = this.x - vector.x;
         let dy = this.y - vector.y;
         return dx * dx + dy * dy;
     }
-    angle(vector) {
-        return Math.atan2(this.cross(vector), this.dot(vector));
+    Angle(vector) {
+        return Math.atan2(this.Cross(vector), this.Dot(vector));
     }
-    lerp(vector, t) {
+    Lerp(vector, t) {
         return new Vector2(this.x + (vector.x - this.x) * t, this.y + (vector.y - this.y) * t);
     }
-    equals(vector) {
+    Equals(vector) {
         return this.x === vector.x && this.y === vector.y;
     }
-    toString() {
+    Clone() {
+        return new Vector2(this.x, this.y);
+    }
+    ToString() {
         return `(${this.x}, ${this.y})`;
     }
 }

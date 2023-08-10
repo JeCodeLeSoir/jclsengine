@@ -7,6 +7,7 @@ export default abstract class Behavior {
   private _isLoaded: boolean = false;
   private _isDestroyed: boolean = false;
   private _collisionEnter: boolean = false;
+  private _parent: Behavior | null = null;
 
   protected Tag: string = "default";
 
@@ -14,6 +15,17 @@ export default abstract class Behavior {
   protected IsPhysics: boolean = false;
   protected boundingBox: Bounds | null = null;
 
+  public SetParent(parent: Behavior) {
+    this._parent = parent;
+    this.localPosition =
+      this.position.Subtract(this._parent.position);
+  }
+
+  public GetParent() {
+    return this._parent;
+  }
+
+  localPosition: Vector2 = new Vector2();
   position: Vector2 = new Vector2();
 
   SetPosition(position: Vector2) {
@@ -53,6 +65,12 @@ export default abstract class Behavior {
 
   Init(ctx: CanvasRenderingContext2D) { }
 
+  ApplyTransform() {
+    if (this._parent !== null) {
+      this.position = this.localPosition.Clone().Add(this._parent.position);
+    }
+  }
+
   Update(deltaTime: number) { }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
@@ -76,11 +94,20 @@ export default abstract class Behavior {
     return this._isLoaded;
   }
 
-  Instantiate<T extends Behavior>(behavior: T): T {
+  Instantiate<T extends Behavior>(behavior: T,
+    behavior_parent: T | null = null): T {
     Behavior_Instance.behaviors.push(behavior);
+
     behavior.Load();
+
+    if (behavior_parent !== null) {
+      behavior.SetParent(behavior_parent);
+    }
+
     return behavior;
   }
+
+
 
   setIsLoaded(isLoaded: boolean) {
     this._isLoaded = isLoaded;

@@ -1,0 +1,15 @@
+{
+  "anims": {
+    "keys": [
+      {
+        "timeStart": 0,
+        "timeEnd": 1000,
+        "margin_start": 0,
+        "margin_end": 0,
+        "src": null
+      }
+    ],
+    "isRefImg": true,
+    "src": "img/sprite.png"
+  }
+}

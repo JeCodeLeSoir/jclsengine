@@ -79,7 +79,12 @@ export default class JCLSEngine {
                     });
                 }
             });
-            Behavior_Instance.behaviors.forEach((behavior) => behavior.GetIsLoaded() ? behavior.Update(deltaTime) : {});
+            Behavior_Instance.behaviors.forEach((behavior) => {
+                if (behavior.GetIsLoaded()) {
+                    behavior.Update(deltaTime);
+                    behavior.ApplyTransform();
+                }
+            });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "rgb(31, 31, 31)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);

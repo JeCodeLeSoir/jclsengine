@@ -77,81 +77,85 @@ export default class Vector2 {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
-  get magnitude(): number {
+  get Magnitude(): number {
     return Math.sqrt(this.SqrtMagnitude);
   }
 
-  get normalized(): Vector2 {
-    return new Vector2(this.x / this.magnitude, this.y / this.magnitude);
+  get Normalized(): Vector2 {
+    return new Vector2(this.x / this.Magnitude, this.y / this.Magnitude);
   }
 
-  set(x: number, y: number): Vector2 {
+  Set(x: number, y: number): Vector2 {
     this.x = x;
     this.y = y;
     return this;
   }
 
-  add(vector: Vector2): Vector2 {
+  Add(vector: Vector2): Vector2 {
     this.x += vector.x;
     this.y += vector.y;
     return this;
   }
 
-  subtract(vector: Vector2): Vector2 {
+  Subtract(vector: Vector2): Vector2 {
     this.x -= vector.x;
     this.y -= vector.y;
     return this;
   }
 
-  multiply(vector: Vector2): Vector2 {
+  Multiply(vector: Vector2): Vector2 {
     this.x *= vector.x;
     this.y *= vector.y;
     return this;
   }
 
-  divide(vector: Vector2): Vector2 {
+  Divide(vector: Vector2): Vector2 {
     this.x /= vector.x;
     this.y /= vector.y;
     return this;
   }
 
-  scale(vector: Vector2): Vector2 {
+  Scale(vector: Vector2): Vector2 {
     this.x *= vector.x;
     this.y *= vector.y;
     return this;
   }
 
-  dot(vector: Vector2): number {
+  Dot(vector: Vector2): number {
     return this.x * vector.x + this.y * vector.y;
   }
 
-  cross(vector: Vector2): number {
+  Cross(vector: Vector2): number {
     return this.x * vector.y - this.y * vector.x;
   }
 
-  distance(vector: Vector2): number {
-    return Math.sqrt(this.distanceSquared(vector));
+  Distance(vector: Vector2): number {
+    return Math.sqrt(this.DistanceSquared(vector));
   }
 
-  distanceSquared(vector: Vector2): number {
+  DistanceSquared(vector: Vector2): number {
     let dx = this.x - vector.x;
     let dy = this.y - vector.y;
     return dx * dx + dy * dy;
   }
 
-  angle(vector: Vector2): number {
-    return Math.atan2(this.cross(vector), this.dot(vector));
+  Angle(vector: Vector2): number {
+    return Math.atan2(this.Cross(vector), this.Dot(vector));
   }
 
-  lerp(vector: Vector2, t: number): Vector2 {
+  Lerp(vector: Vector2, t: number): Vector2 {
     return new Vector2(this.x + (vector.x - this.x) * t, this.y + (vector.y - this.y) * t);
   }
 
-  equals(vector: Vector2): boolean {
+  Equals(vector: Vector2): boolean {
     return this.x === vector.x && this.y === vector.y;
   }
 
-  toString(): string {
+  Clone(): Vector2 {
+    return new Vector2(this.x, this.y);
+  }
+
+  ToString(): string {
     return `(${this.x}, ${this.y})`;
   }
 
