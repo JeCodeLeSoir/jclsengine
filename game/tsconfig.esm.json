@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "noImplicitAny": false,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "sourceMap": false,
+        "strict": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/*"
+            ]
+        }
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

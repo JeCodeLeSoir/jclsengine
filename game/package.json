@@ -1,0 +1,10 @@
+{
+  "name": "game",
+  "version": "0.0.1",
+  "description": "Game 2D",
+  "type": "module",
+  "author": "JeCodeLeSoir",
+  "dependencies": {
+    "jclsengine": "file:../jclsengine"
+  }
+}

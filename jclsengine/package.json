@@ -1,0 +1,20 @@
+{
+  "name": "jclsengine",
+  "version": "0.0.1",
+  "description": "JavaScript 2D library",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "author": "JeCodeLeSoir",
+  "license": "MIT",
+  "devDependencies": {
+    "typedoc": "^0.24.8"
+  }
+}

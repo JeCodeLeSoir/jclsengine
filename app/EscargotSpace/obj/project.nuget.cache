@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "QkiuBU9vLFZGzsrqGAgO580s9N/4HZXfOhl7hDTnbCIF86uetu5COmEe40WWlhTCm1qCqQmV+x8hsV7L/h3SZg==",
+  "success": true,
+  "projectFilePath": "C:\\laragon\\www\\SpaceTest\\app\\EscargotSpace\\HelloPhotino.StaticFileServer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\aurel\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\6.0.0\\microsoft.extensions.fileproviders.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\aurel\\.nuget\\packages\\microsoft.extensions.fileproviders.embedded\\6.0.9\\microsoft.extensions.fileproviders.embedded.6.0.9.nupkg.sha512",
+    "C:\\Users\\aurel\\.nuget\\packages\\microsoft.extensions.primitives\\6.0.0\\microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "C:\\Users\\aurel\\.nuget\\packages\\photino.native\\2.2.3\\photino.native.2.2.3.nupkg.sha512",
+    "C:\\Users\\aurel\\.nuget\\packages\\photino.net\\2.3.0\\photino.net.2.3.0.nupkg.sha512",
+    "C:\\Users\\aurel\\.nuget\\packages\\photino.net.server\\1.0.0\\photino.net.server.1.0.0.nupkg.sha512",
+    "C:\\Users\\aurel\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
