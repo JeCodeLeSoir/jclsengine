@@ -319,10 +319,20 @@ export class ColliderFunc {
     console.log("dotProduct :", dotProduct);
 
     if (dotProduct > 0) {
+
       Phys_B.behavior.position = Phys_B.behavior.position.Add(
         correctionVector.Multiply(Phys_B.restitution)
       );
+
       Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
+        correctionVector.Multiply(Phys_A.restitution)
+      );
+
+      Phys_B.velocity = Phys_B.velocity.Add(
+        correctionVector.Multiply(Phys_B.restitution)
+      );
+
+      Phys_A.velocity = Phys_A.velocity.Subtract(
         correctionVector.Multiply(Phys_A.restitution)
       );
     }
@@ -333,29 +343,20 @@ export class ColliderFunc {
       Phys_B.behavior.position = Phys_B.behavior.position.Subtract(
         correctionVector.Multiply(Phys_B.restitution)
       );
+
+      Phys_A.velocity = Phys_A.velocity.Add(
+        correctionVector.Multiply(Phys_A.restitution)
+      );
+
+      Phys_B.velocity = Phys_B.velocity.Subtract(
+        correctionVector.Multiply(Phys_B.restitution)
+      );
     }
-
-
-    /*
-
-    Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
-      correctionVector.Multiply(Phys_A.restitution)
-    );
-
-    Phys_A.velocity = Phys_A.velocity.Subtract(
-      correctionVector.Multiply(Phys_A.restitution)
-    );
-
-    Phys_B.velocity = Phys_B.velocity.Add(
-      correctionVector.Multiply(Phys_B.restitution)
-    );*/
 
     //Phys_A.behavior.OnCollisionEnter(Phys_B.behavior);
     //Phys_B.behavior.OnCollisionEnter(Phys_A.behavior);
 
-
   }
-
 
   static CheckCollisionCircleCircle(circle_A: Circle, circle_B: Circle): boolean {
     /* Check Collision entre deux cercles */
