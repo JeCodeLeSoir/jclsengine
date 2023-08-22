@@ -63,15 +63,26 @@ export class ColliderShap {
   }
 
   project(axis: Vector2) {
-    const scalars: number[] = [];
     const corners = this.corners;
     const len = corners.length;
 
+    let min = axis.Dot(this.corners[0]);
+    let max = min;
+
     for (let i = 0; i < len; i++) {
-      scalars.push(corners[i].DotProduct(axis));
+      let p = corners[i].Dot(axis);
+      if (p < min) {
+        min = p;
+      }
+      if (p > max) {
+        max = p;
+      }
     }
 
-    return new Projection(Math.min.apply(Math, scalars), Math.max.apply(Math, scalars));
+    return new Projection(
+      min,
+      max
+    );
   }
 
   Calculate() {
@@ -114,21 +125,38 @@ export class MTV {
 
 export class ColliderFunc {
 
-  static CalculeSAT(ctx, box_A: Box, box_B: Box) {
+
+  static CalculeSAT(ctx, box_A: Box, box_B: Box, corners_array: Vector2[]) {
 
     let overlap: number = Number.MAX_VALUE;
-
     let overlapN: Vector2 = new Vector2();
 
-    let axes_a = box_A.getAxes();
+    //let axes_a = box_A.getAxes();
+    //let corners_array = box_A.corners;
 
-    for (let i = 0; i < axes_a.length; i++) {
-      let axis = axes_a[i];
+    for (let i = 0; i < corners_array.length; i++) {
+      let _corner = corners_array[i].Clone();
+      //let axis = axes_a[i];
+
+      let nextCorner: Vector2 | null = null;
+
+      if (i + 1 === corners_array.length) {
+        nextCorner = corners_array[0].Clone();
+      }
+      else {
+        nextCorner = corners_array[i + 1].Clone();
+      }
+
+      const edge = nextCorner.Subtract(_corner);
+      const normal = new Vector2(edge.y, -edge.x);
+
+      let axis = normal.Normalized;
 
       let p1: Projection = box_A.project(axis);
       let p2: Projection = box_B.project(axis);
 
       /* debug Projection p1 */
+      ctx.save();
       ctx.beginPath();
       ctx.strokeStyle = "red";
       ctx.moveTo(box_A.center.x, box_A.center.y);
@@ -143,13 +171,10 @@ export class ColliderFunc {
       ctx.lineTo(box_B.center.x + axis.x * p2.min, box_B.center.y + axis.y * p2.min);
       ctx.stroke();
       ctx.closePath();
+      ctx.restore();
 
       if (!p1.Overlap(p2)) {
-        return new MTV(
-          false,
-          new Vector2(),
-          0
-        );
+        return new MTV(false, new Vector2(), 0);
       }
       else {
         let _overlap = p1.getOverlap(p2);
@@ -163,20 +188,15 @@ export class ColliderFunc {
             _overlap += maxs;
           }
         }
-
         if (_overlap < overlap) {
           overlap = _overlap;
           overlapN = axis;
         }
+
       }
     }
 
-    return new MTV(
-      true,
-      overlapN,
-      overlap
-    );
-
+    return new MTV(true, overlapN, overlap);
   }
 
   static CheckCollisionBoxBox(
@@ -189,18 +209,25 @@ export class ColliderFunc {
     let overlap: number = 0;
     let overlapN: Vector2 = new Vector2();
 
-    let mvt_1 = ColliderFunc.CalculeSAT(ctx, box_A, box_B);
+    let mvt_1 = ColliderFunc.CalculeSAT(ctx, box_A, box_B, box_A.corners);
+    let mvt_2 = ColliderFunc.CalculeSAT(ctx, box_A, box_B, box_B.corners);
 
-    if (!mvt_1.isColliding) {
-      return new MTV(
-        false,
-        new Vector2(),
-        0
-      );
+    if (mvt_1.isColliding || mvt_2.isColliding) {
+      if (mvt_1.overlap < mvt_2.overlap) {
+        overlap = mvt_1.overlap;
+        overlapN = mvt_1.axis;
+      }
+      else {
+        overlap = mvt_2.overlap;
+        overlapN = mvt_2.axis;
+      }
+    }
+    else {
+      return new MTV(false, new Vector2(), 0);
     }
 
-    overlap = mvt_1.overlap;
-    overlapN = mvt_1.axis;
+    //overlap = mvt_1.overlap;
+    //overlapN = mvt_1.axis;
 
     /* affiche un rectangle */
     ctx.save();
@@ -228,20 +255,16 @@ export class ColliderFunc {
     ctx.beginPath();
     ctx.strokeStyle = "green";
     ctx.moveTo(
-      box_A.center.x + 15
-      , box_A.center.y + 15
+      box_A.center.x
+      , box_A.center.y
     );
     ctx.lineTo(box_A.center.x + overlapN.x * overlap, box_A.center.y + overlapN.y * overlap);
     ctx.stroke();
     ctx.closePath();
 
-    let _MTV = new MTV(
-      true,
-      overlapN,
-      overlap
-    );
+    let _MTV = new MTV(true, overlapN, overlap);
 
-    console.log(overlapN, overlap);
+    //console.log(overlapN, overlap);
 
     return _MTV;
   }
@@ -262,16 +285,58 @@ export class ColliderFunc {
     const mass_A = Phys_A.mass;
     const mass_B = Phys_B.mass;
 
-
+    /* calculer une direction par rapport le centre de l'objet et le mvt */
 
     const correctionVector = new Vector2(
       mtv.axis.x * mtv.overlap * dt * (mass_B / (mass_A + mass_B)),
       mtv.axis.y * mtv.overlap * dt * (mass_A / (mass_A + mass_B))
     );
 
-    Phys_B.behavior.position = Phys_B.behavior.position.Add(
-      correctionVector.Multiply(Phys_B.restitution)
+    /* affiche la direction de la correction */
+    ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = "green";
+    ctx.moveTo(
+      Phys_A.behavior.position.x
+      , Phys_A.behavior.position.y
     );
+    ctx.lineTo(
+      Phys_A.behavior.position.x
+      + correctionVector.x,
+      Phys_A.behavior.position.y
+      + correctionVector.y);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+
+    /* vérifier si l'objet A et devent l'objet B */
+    let position_A = Phys_A.behavior.position.Clone();
+    let position_B = Phys_B.behavior.position.Clone();
+
+    let direction_A_B = position_B.Subtract(position_A).Normalized;
+    let dotProduct = direction_A_B.Dot(mtv.axis);
+
+    console.log("dotProduct :", dotProduct);
+
+    if (dotProduct > 0) {
+      Phys_B.behavior.position = Phys_B.behavior.position.Add(
+        correctionVector.Multiply(Phys_B.restitution)
+      );
+      Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
+        correctionVector.Multiply(Phys_A.restitution)
+      );
+    }
+    else {
+      Phys_A.behavior.position = Phys_A.behavior.position.Add(
+        correctionVector.Multiply(Phys_A.restitution)
+      );
+      Phys_B.behavior.position = Phys_B.behavior.position.Subtract(
+        correctionVector.Multiply(Phys_B.restitution)
+      );
+    }
+
+
+    /*
 
     Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
       correctionVector.Multiply(Phys_A.restitution)
@@ -283,7 +348,7 @@ export class ColliderFunc {
 
     Phys_B.velocity = Phys_B.velocity.Add(
       correctionVector.Multiply(Phys_B.restitution)
-    );
+    );*/
 
     //Phys_A.behavior.OnCollisionEnter(Phys_B.behavior);
     //Phys_B.behavior.OnCollisionEnter(Phys_A.behavior);

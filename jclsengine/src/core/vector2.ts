@@ -152,9 +152,7 @@ export default class Vector2 {
     return this;
   }
 
-  Dot(vector: Vector2): number {
-    return this.x * vector.x + this.y * vector.y;
-  }
+
 
   Cross(vector: Vector2): number {
     return this.x * vector.y - this.y * vector.x;
@@ -182,7 +180,7 @@ export default class Vector2 {
     return this.x === vector.x && this.y === vector.y;
   }
 
-  DotProduct(vector: Vector2): number {
+  Dot(vector: Vector2): number {
     return this.x * vector.x + this.y * vector.y;
   }
 

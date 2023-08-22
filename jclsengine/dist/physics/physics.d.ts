@@ -26,7 +26,7 @@ export declare class MTV {
     constructor(isColliding: boolean, axis: Vector2, overlap: number);
 }
 export declare class ColliderFunc {
-    static CalculeSAT(ctx: any, box_A: Box, box_B: Box): MTV;
+    static CalculeSAT(ctx: any, box_A: Box, box_B: Box, corners_array: Vector2[]): MTV;
     static CheckCollisionBoxBox(ctx: any, box_A: Box, box_B: Box): MTV;
     static ResolveCollisionBoxBox(ctx: any, Phys_A: PhysicsCollider2d, Phys_B: PhysicsCollider2d, mtv: MTV, dt: number): void;
     static CheckCollisionCircleCircle(circle_A: Circle, circle_B: Circle): boolean;

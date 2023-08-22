@@ -117,9 +117,6 @@ export default class Vector2 {
         this.y *= vector.y;
         return this;
     }
-    Dot(vector) {
-        return this.x * vector.x + this.y * vector.y;
-    }
     Cross(vector) {
         return this.x * vector.y - this.y * vector.x;
     }
@@ -140,7 +137,7 @@ export default class Vector2 {
     Equals(vector) {
         return this.x === vector.x && this.y === vector.y;
     }
-    DotProduct(vector) {
+    Dot(vector) {
         return this.x * vector.x + this.y * vector.y;
     }
     Clone() {
