@@ -144,6 +144,12 @@ export class ColliderFunc {
         return new MTV(true, overlapN, overlap);
     }
     static CheckCollisionBoxBox(ctx, box_A, box_B) {
+        /* check la distance entre A et b */
+        let distance = box_A.center.Subtract(box_B.center).Magnitude;
+        let minDistance = box_A.size.Magnitude + box_B.size.Magnitude;
+        if (distance > minDistance) {
+            return new MTV(false, new Vector2(), 0);
+        }
         /* Check Collision entre deux rectangles */
         /* Separating Axis Theorem */
         let overlap = 0;
@@ -417,6 +423,7 @@ export default class Physics {
                 const B_collider = this.colliders[j];
                 const MTV = PhysicsCollider2d.CheckCollision(ctx, A_collider, B_collider);
                 if (MTV.isColliding) {
+                    console.log(A_collider.behavior?.constructor.name, "collide with", B_collider.behavior?.constructor.name);
                     PhysicsCollider2d.ResolveCollision(ctx, A_collider, B_collider, MTV, dt);
                 }
             }

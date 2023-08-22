@@ -204,8 +204,19 @@ export class ColliderFunc {
     box_A: Box,
     box_B: Box
   ): MTV {
+
+    /* check la distance entre A et b */
+    let distance = box_A.center.Subtract(box_B.center).Magnitude;
+    let minDistance = box_A.size.Magnitude + box_B.size.Magnitude;
+
+    if (distance > minDistance) {
+      return new MTV(false, new Vector2(), 0);
+    }
+
     /* Check Collision entre deux rectangles */
     /* Separating Axis Theorem */
+
+
     let overlap: number = 0;
     let overlapN: Vector2 = new Vector2();
 
@@ -278,6 +289,7 @@ export class ColliderFunc {
   ): void {
     /* Resolve Collision entre deux rectangles */
     /* Separating Axis Theorem */
+
 
     if (Phys_A.behavior === null || Phys_B.behavior === null) return;
     if (Phys_A.shap === null || Phys_B.shap === null) return;
@@ -388,8 +400,8 @@ export class Capsule extends ColliderShap {
 
   DebugCollider(ctx) {
     ctx.strokeStyle = "red";
-
   }
+
 }
 
 export class Polygon extends ColliderShap {
@@ -448,6 +460,7 @@ export class Box extends ColliderShap {
   }
 
   DebugCollider(ctx) {
+
     ctx.save();
     ctx.strokeStyle = "yellow";
     ctx.translate(this.center.x, this.center.y);
@@ -464,7 +477,6 @@ export class Box extends ColliderShap {
     ctx.lineTo(-halfWidth, -halfHeight);
     ctx.stroke();
     ctx.closePath();
-
     ctx.restore();
 
     ctx.fillStyle = "red";
@@ -603,6 +615,11 @@ export default class Physics {
         const B_collider = this.colliders[j];
         const MTV = PhysicsCollider2d.CheckCollision(ctx, A_collider, B_collider);
         if (MTV.isColliding) {
+
+          console.log(A_collider.behavior?.constructor.name,
+            "collide with",
+            B_collider.behavior?.constructor.name);
+
           PhysicsCollider2d.ResolveCollision(ctx, A_collider, B_collider, MTV, dt);
         }
       }
@@ -626,10 +643,7 @@ export default class Physics {
 
       //A_collider.behavior.rotation += A_collider.velocity.Magnitude * 0.1;
       A_collider.UpdateShap();
-
       //A_collider.DebugCollider(ctx);
-
-
     }
 
   }
