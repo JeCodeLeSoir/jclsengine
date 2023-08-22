@@ -73,49 +73,59 @@ export default class Vector2 {
         return this;
     }
     Add(vector) {
+        let a = this.Clone();
         if (typeof vector === "number") {
-            this.x += vector;
-            this.y += vector;
-            return this;
+            a.x += vector;
+            a.y += vector;
+            return a;
         }
-        this.x += vector.x;
-        this.y += vector.y;
-        return this;
+        a.x += vector.x;
+        a.y += vector.y;
+        return a;
     }
     Subtract(vector) {
+        let a = this.Clone();
         if (typeof vector === "number") {
-            this.x -= vector;
-            this.y -= vector;
-            return this;
+            a.x -= vector;
+            a.y -= vector;
+            return a;
         }
-        this.x -= vector.x;
-        this.y -= vector.y;
-        return this;
+        a.x -= vector.x;
+        a.y -= vector.y;
+        return a;
     }
     Multiply(vector) {
+        let a = this.Clone();
         if (typeof vector === "number") {
-            this.x *= vector;
-            this.y *= vector;
+            a.x *= vector;
+            a.y *= vector;
             return this;
         }
-        this.x *= vector.x;
-        this.y *= vector.y;
-        return this;
+        a.x *= vector.x;
+        a.y *= vector.y;
+        return a;
     }
     Divide(vector) {
+        let a = this.Clone();
         if (typeof vector === "number") {
-            this.x /= vector;
-            this.y /= vector;
-            return this;
+            a.x /= vector;
+            a.y /= vector;
+            return a;
         }
-        this.x /= vector.x;
-        this.y /= vector.y;
-        return this;
+        a.x /= vector.x;
+        a.y /= vector.y;
+        return a;
     }
     Scale(vector) {
-        this.x *= vector.x;
-        this.y *= vector.y;
-        return this;
+        let a = this.Clone();
+        if (typeof vector === "number") {
+            a.x *= vector;
+            a.y *= vector;
+            return a;
+        }
+        a.x *= vector.x;
+        a.y *= vector.y;
+        return a;
     }
     Cross(vector) {
         return this.x * vector.y - this.y * vector.x;

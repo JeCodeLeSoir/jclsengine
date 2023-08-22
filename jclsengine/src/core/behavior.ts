@@ -91,7 +91,7 @@ export default abstract class Behavior {
 
   ApplyTransform() {
     if (this._parent !== null) {
-      this.position = this.localPosition.Clone().Add(this._parent.position);
+      this.position = this.localPosition.Add(this._parent.position);
     }
   }
 

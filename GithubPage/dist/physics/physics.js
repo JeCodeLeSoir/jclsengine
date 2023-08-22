@@ -36,7 +36,7 @@ export class ColliderShap {
         const axes = [];
         const corners = this.corners;
         for (let i = 0; i < corners.length; i++) {
-            const corner = corners[i].Clone();
+            const corner = corners[i];
             //const nextCorner = corners[i + 1 === corners.length ? 0 : i + 1].Clone();
             //const edge = nextCorner.Subtract(corner);
             //const normal = new Vector2(edge.y, -edge.x);
@@ -90,14 +90,14 @@ export class ColliderFunc {
         //let axes_a = box_A.getAxes();
         //let corners_array = box_A.corners;
         for (let i = 0; i < corners_array.length; i++) {
-            let _corner = corners_array[i].Clone();
+            let _corner = corners_array[i];
             //let axis = axes_a[i];
             let nextCorner = null;
             if (i + 1 === corners_array.length) {
-                nextCorner = corners_array[0].Clone();
+                nextCorner = corners_array[0];
             }
             else {
-                nextCorner = corners_array[i + 1].Clone();
+                nextCorner = corners_array[i + 1];
             }
             const edge = nextCorner.Subtract(_corner);
             const normal = new Vector2(edge.y, -edge.x);
@@ -216,32 +216,23 @@ export class ColliderFunc {
         ctx.closePath();
         ctx.restore();
         /* vérifier si l'objet A et devent l'objet B */
-        let position_A = Phys_A.behavior.position.Clone();
-        let position_B = Phys_B.behavior.position.Clone();
+        let position_A = Phys_A.behavior.position;
+        let position_B = Phys_B.behavior.position;
         let direction_A_B = position_B.Subtract(position_A).Normalized;
         let dotProduct = direction_A_B.Dot(mtv.axis);
         console.log("dotProduct :", dotProduct);
         if (dotProduct > 0) {
             Phys_B.behavior.position = Phys_B.behavior.position.Add(correctionVector.Multiply(Phys_B.restitution));
             Phys_A.behavior.position = Phys_A.behavior.position.Subtract(correctionVector.Multiply(Phys_A.restitution));
+            Phys_B.velocity = Phys_B.velocity.Add(correctionVector.Multiply(Phys_B.restitution));
+            Phys_A.velocity = Phys_A.velocity.Subtract(correctionVector.Multiply(Phys_A.restitution));
         }
         else {
             Phys_A.behavior.position = Phys_A.behavior.position.Add(correctionVector.Multiply(Phys_A.restitution));
             Phys_B.behavior.position = Phys_B.behavior.position.Subtract(correctionVector.Multiply(Phys_B.restitution));
+            Phys_A.velocity = Phys_A.velocity.Add(correctionVector.Multiply(Phys_A.restitution));
+            Phys_B.velocity = Phys_B.velocity.Subtract(correctionVector.Multiply(Phys_B.restitution));
         }
-        /*
-    
-        Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
-          correctionVector.Multiply(Phys_A.restitution)
-        );
-    
-        Phys_A.velocity = Phys_A.velocity.Subtract(
-          correctionVector.Multiply(Phys_A.restitution)
-        );
-    
-        Phys_B.velocity = Phys_B.velocity.Add(
-          correctionVector.Multiply(Phys_B.restitution)
-        );*/
         //Phys_A.behavior.OnCollisionEnter(Phys_B.behavior);
         //Phys_B.behavior.OnCollisionEnter(Phys_A.behavior);
     }

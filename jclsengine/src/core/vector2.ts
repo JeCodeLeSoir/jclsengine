@@ -86,73 +86,84 @@ export default class Vector2 {
   }
 
   Set(x: number, y: number): Vector2 {
+
     this.x = x;
     this.y = y;
+
     return this;
   }
 
   Add(vector: Vector2 | number): Vector2 {
+    let a = this.Clone();
 
     if (typeof vector === "number") {
-      this.x += vector;
-      this.y += vector;
-      return this;
+      a.x += vector;
+      a.y += vector;
+      return a;
     }
 
-    this.x += vector.x;
-    this.y += vector.y;
-    return this;
+    a.x += vector.x;
+    a.y += vector.y;
+
+    return a;
   }
 
   Subtract(vector: Vector2 | number): Vector2 {
+    let a = this.Clone();
 
     if (typeof vector === "number") {
-      this.x -= vector;
-      this.y -= vector;
-      return this;
+      a.x -= vector;
+      a.y -= vector;
+      return a;
     }
 
-    this.x -= vector.x;
-    this.y -= vector.y;
+    a.x -= vector.x;
+    a.y -= vector.y;
 
-    return this;
+    return a;
   }
 
   Multiply(vector: Vector2 | number): Vector2 {
+    let a = this.Clone();
 
     if (typeof vector === "number") {
-      this.x *= vector;
-      this.y *= vector;
+      a.x *= vector;
+      a.y *= vector;
       return this;
     }
 
-    this.x *= vector.x;
-    this.y *= vector.y;
+    a.x *= vector.x;
+    a.y *= vector.y;
 
-    return this;
+    return a;
   }
-
-
 
   Divide(vector: Vector2 | number): Vector2 {
+    let a = this.Clone();
     if (typeof vector === "number") {
-      this.x /= vector;
-      this.y /= vector;
-      return this;
+      a.x /= vector;
+      a.y /= vector;
+      return a;
     }
 
-    this.x /= vector.x;
-    this.y /= vector.y;
-    return this;
+    a.x /= vector.x;
+    a.y /= vector.y;
+    return a;
   }
 
-  Scale(vector: Vector2): Vector2 {
-    this.x *= vector.x;
-    this.y *= vector.y;
-    return this;
+  Scale(vector: Vector2 | number): Vector2 {
+    let a = this.Clone();
+
+    if (typeof vector === "number") {
+      a.x *= vector;
+      a.y *= vector;
+      return a;
+    }
+
+    a.x *= vector.x;
+    a.y *= vector.y;
+    return a;
   }
-
-
 
   Cross(vector: Vector2): number {
     return this.x * vector.y - this.y * vector.x;
@@ -184,7 +195,7 @@ export default class Vector2 {
     return this.x * vector.x + this.y * vector.y;
   }
 
-  Clone(): Vector2 {
+  private Clone(): Vector2 {
     return new Vector2(this.x, this.y);
   }
 

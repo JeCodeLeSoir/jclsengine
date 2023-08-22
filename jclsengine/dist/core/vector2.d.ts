@@ -41,7 +41,7 @@ export default class Vector2 {
     Subtract(vector: Vector2 | number): Vector2;
     Multiply(vector: Vector2 | number): Vector2;
     Divide(vector: Vector2 | number): Vector2;
-    Scale(vector: Vector2): Vector2;
+    Scale(vector: Vector2 | number): Vector2;
     Cross(vector: Vector2): number;
     Distance(vector: Vector2): number;
     DistanceSquared(vector: Vector2): number;
@@ -49,6 +49,6 @@ export default class Vector2 {
     Lerp(vector: Vector2, t: number): Vector2;
     Equals(vector: Vector2): boolean;
     Dot(vector: Vector2): number;
-    Clone(): Vector2;
+    private Clone;
     ToString(): string;
 }

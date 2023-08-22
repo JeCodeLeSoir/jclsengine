@@ -104,6 +104,11 @@ export default class Ship extends jcls.Behavior {
   }
 
   Update(deltaTime: number) {
+
+    //* set velocity to zero
+    if (this.physicsCollider !== null)
+      this.physicsCollider.velocity = new jcls.Vector2(0, 0);
+
     const h = jcls.Behavior_Instance.SCREEN_HEIGHT;
     const w = jcls.Behavior_Instance.SCREEN_WIDTH;
 
