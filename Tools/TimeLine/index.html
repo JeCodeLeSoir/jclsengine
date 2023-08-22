@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Document</title>
+
+  <style>
+    body {
+      width: 100%;
+      height: 100%;
+
+      margin: 0;
+      padding: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 5vh 60vh 5vh 30vh;
+
+      width: 100vw;
+      height: 100%;
+    }
+
+    .grid>div {
+      border: 1px solid #aaa;
+      padding: 5px;
+
+      width: 100%;
+    }
+
+    /*canvas {
+      background-color: #000;
+
+      position: fixed;
+      width: 100%;
+      height: 100%;
+
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }*/
+
+    .container {
+      border: 0;
+      z-index: 9;
+
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+      width: 100%;
+
+      user-select: none;
+    }
+
+    .left-block,
+    .right-block {
+      flex: 1;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 15px;
+    }
+
+    .left-block>img,
+    .left-block>div,
+    .right-block>div {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .resize-bar {
+      width: 5px;
+      cursor: col-resize;
+      background-color: #aaa;
+    }
+
+    .preview {
+      user-select: none;
+      /* draggable false */
+      pointer-events: none;
+    }
+
+    .sprites>img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin: 2px;
+      border: 1px solid #aaa;
+    }
+
+    .timeline {
+      position: relative;
+      z-index: 10;
+      bottom: 0;
+      width: 100%;
+      height: 30vh;
+      padding: 0 !important;
+      background-color: #000;
+
+      overflow-x: scroll;
+      user-select: none;
+    }
+
+    .menu-timeline {
+      /*background-color: #db2ad5;*/
+      display: flex;
+
+      align-items: center;
+      justify-content: left;
+
+      margin: 0;
+      height: 100%;
+    }
+
+    .menu-timeline>li {
+      list-style: none;
+      margin: 5px;
+    }
+
+    .menu-editor {
+      /*background-color: #db2ad5;*/
+      display: flex;
+
+      align-items: center;
+      justify-content: left;
+
+      margin: 0;
+      height: 100%;
+      padding: 0;
+    }
+
+    .menu-editor>li {
+      list-style: none;
+      margin: 5px;
+    }
+
+    button {
+      padding: 5px;
+      border: 0;
+      border-radius: 5px;
+      background-color: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 5px #000;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid">
+    <div>
+      <ul class="menu-editor">
+        <li>
+          <button id="OpenFile">
+            Open Json Data
+          </button>
+        </li>
+        <li>
+          <button id="SaveFile">
+            Save file
+          </button>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="container">
+        <div class="left-block preview">
+          <img id="preview">
+        </div>
+        <div class="resize-bar" id="resizeBar"></div>
+        <div class="right-block">
+          <div class="sprites"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ul class="menu-timeline">
+        <li>
+          <button id="button_play">
+            Play
+          </button>
+        </li>
+        <li>
+          <input id="input_position" type="number" min="0" value="0" name="position">
+        </li>
+        <li>
+          <input id="input_maxFrame" type="number" min="0" value="60" name="maxFrame">
+        </li>
+        <li>
+          <input id="input_speed" type="number" min="0" value="60" name="speed">
+        </li>
+      </ul>
+    </div>
+    <div class="timeline"></div>
+
+  </div>
+  <script type="module" src="./src/app.js"></script>
+</body>
+
+</html>

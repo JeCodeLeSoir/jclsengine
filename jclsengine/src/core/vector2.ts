@@ -91,25 +91,56 @@ export default class Vector2 {
     return this;
   }
 
-  Add(vector: Vector2): Vector2 {
+  Add(vector: Vector2 | number): Vector2 {
+
+    if (typeof vector === "number") {
+      this.x += vector;
+      this.y += vector;
+      return this;
+    }
+
     this.x += vector.x;
     this.y += vector.y;
     return this;
   }
 
-  Subtract(vector: Vector2): Vector2 {
+  Subtract(vector: Vector2 | number): Vector2 {
+
+    if (typeof vector === "number") {
+      this.x -= vector;
+      this.y -= vector;
+      return this;
+    }
+
     this.x -= vector.x;
     this.y -= vector.y;
+
     return this;
   }
 
-  Multiply(vector: Vector2): Vector2 {
+  Multiply(vector: Vector2 | number): Vector2 {
+
+    if (typeof vector === "number") {
+      this.x *= vector;
+      this.y *= vector;
+      return this;
+    }
+
     this.x *= vector.x;
     this.y *= vector.y;
+
     return this;
   }
 
-  Divide(vector: Vector2): Vector2 {
+
+
+  Divide(vector: Vector2 | number): Vector2 {
+    if (typeof vector === "number") {
+      this.x /= vector;
+      this.y /= vector;
+      return this;
+    }
+
     this.x /= vector.x;
     this.y /= vector.y;
     return this;
@@ -149,6 +180,10 @@ export default class Vector2 {
 
   Equals(vector: Vector2): boolean {
     return this.x === vector.x && this.y === vector.y;
+  }
+
+  DotProduct(vector: Vector2): number {
+    return this.x * vector.x + this.y * vector.y;
   }
 
   Clone(): Vector2 {

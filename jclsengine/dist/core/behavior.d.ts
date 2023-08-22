@@ -1,4 +1,4 @@
-import Bounds from "./bounds.js";
+import { ColliderShap, PhysicsCollider2d } from "../physics/physics.js";
 import Vector2 from "./vector2.js";
 export default abstract class Behavior {
     private _isLoaded;
@@ -8,21 +8,23 @@ export default abstract class Behavior {
     protected Tag: string;
     protected DisplayOrder: number;
     protected IsPhysics: boolean;
-    protected boundingBox: Bounds | null;
+    physicsCollider: PhysicsCollider2d | null;
+    shap: ColliderShap | null;
     SetParent(parent: Behavior): void;
     GetParent(): Behavior | null;
     localPosition: Vector2;
     position: Vector2;
+    rotation: number;
     SetPosition(position: Vector2): void;
     GetIsPhysics(): boolean;
     GetTag(): string;
     SetTag(tag: string): void;
     SetCollisionEnter(Enter: boolean): void;
     GetCollisionEnter(): boolean;
-    GetBoundingBox(): Bounds | null;
     GetDisplayOrder(): number;
     Load(): void;
     Init(ctx: CanvasRenderingContext2D): void;
+    InitPhysics(): void;
     ApplyTransform(): void;
     Update(deltaTime: number): void;
     Draw(ctx: CanvasRenderingContext2D, deltaTime: number): void;
@@ -32,6 +34,6 @@ export default abstract class Behavior {
     OnCollisionExit(other: Behavior): void;
     GetIsDestroyed(): boolean;
     GetIsLoaded(): boolean;
-    Instantiate<T extends Behavior>(behavior: T, behavior_parent?: T | null): T;
+    Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null): T;
     setIsLoaded(isLoaded: boolean): void;
 }

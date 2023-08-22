@@ -20,6 +20,7 @@ export default class AsteroideSpawner extends jcls.Behavior {
 
   Load() {
     this.setIsLoaded(true);
+    this.InitPhysics();
   }
 
   Update(deltaTime: number) {

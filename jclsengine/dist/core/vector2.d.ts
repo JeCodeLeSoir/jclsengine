@@ -37,10 +37,10 @@ export default class Vector2 {
     get Magnitude(): number;
     get Normalized(): Vector2;
     Set(x: number, y: number): Vector2;
-    Add(vector: Vector2): Vector2;
-    Subtract(vector: Vector2): Vector2;
-    Multiply(vector: Vector2): Vector2;
-    Divide(vector: Vector2): Vector2;
+    Add(vector: Vector2 | number): Vector2;
+    Subtract(vector: Vector2 | number): Vector2;
+    Multiply(vector: Vector2 | number): Vector2;
+    Divide(vector: Vector2 | number): Vector2;
     Scale(vector: Vector2): Vector2;
     Dot(vector: Vector2): number;
     Cross(vector: Vector2): number;
@@ -49,6 +49,7 @@ export default class Vector2 {
     Angle(vector: Vector2): number;
     Lerp(vector: Vector2, t: number): Vector2;
     Equals(vector: Vector2): boolean;
+    DotProduct(vector: Vector2): number;
     Clone(): Vector2;
     ToString(): string;
 }

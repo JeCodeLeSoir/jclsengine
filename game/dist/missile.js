@@ -22,9 +22,15 @@ export default class Missile extends jcls.Behavior {
         this.image.addEventListener('load', () => {
             this.height = this.image.height;
             this.width = this.image.width;
-            this.boundingBox = new jcls.Bounds(new jcls.Vector2(this.position.x, this.position.y), new jcls.Vector2(this.width, 10));
+            /*this.boundingBox = new jcls.Bounds(new
+              jcls.Vector2(this.position.x, this.position.y), new
+              jcls.Vector2(this.width, 10));*/
+            this.shap = new jcls.Box(this.width, this.height);
+            this.shap.center = this.position;
+            this.shap.rotation = this.rotation;
             this._clipExplosion.Load('./assets/sounds/8bitexplosion.mp3');
             this.setIsLoaded(true);
+            this.InitPhysics();
         });
     }
     Update(deltaTime) {

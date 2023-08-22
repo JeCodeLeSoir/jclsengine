@@ -23,7 +23,7 @@ export default class Bounds {
     this.max.y = center.y + size.y / 2;
   }
 
-  Update(behavior: Behavior) {
+  /*Update(behavior: Behavior) {
     this.center = behavior.position;
 
     this.min.x = this.center.x - this.size.x / 2;
@@ -31,7 +31,18 @@ export default class Bounds {
 
     this.max.x = this.center.x + this.size.x / 2;
     this.max.y = this.center.y + this.size.y / 2;
+  }*/
+
+  Update(position: Vector2) {
+    this.center = position;
+
+    this.min.x = this.center.x - this.size.x / 2;
+    this.min.y = this.center.y - this.size.y / 2;
+
+    this.max.x = this.center.x + this.size.x / 2;
+    this.max.y = this.center.y + this.size.y / 2;
   }
+
 
   DebugDraw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();

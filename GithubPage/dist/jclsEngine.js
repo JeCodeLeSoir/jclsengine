@@ -1,3 +1,4 @@
+import Physics from "./physics/physics.js";
 export class Behavior_Instance {
     static behaviors = [];
     static SCREEN_HEIGHT;
@@ -31,6 +32,24 @@ export default class JCLSEngine {
         const _behaviors = _callback();
         _behaviors.forEach((behavior) => Behavior_Instance.behaviors.push(behavior));
         Behavior_Instance.behaviors.forEach((behavior) => behavior.Init(ctx));
+        /*
+               test physic
+            */
+        let physics = Physics.Instance;
+        /*Behavior_Instance.behaviors.forEach((behavior) => {
+          behavior.On('load', () => {
+            console.log(behavior.GetIsPhysics(), behavior);
+            if (behavior.GetIsPhysics()) {
+              let newp = new PhysicsCollider2d();
+              newp.behavior = behavior;
+              newp.shap = behavior.shap;
+              physics.AddCollider(newp);
+            }
+          })
+        })*/
+        /*
+           end test physic
+          */
         Behavior_Instance.behaviors.forEach((behavior) => behavior.Load());
         let previousTime = 0;
         let currentTime = 0;
@@ -53,48 +72,66 @@ export default class JCLSEngine {
             window.dispatchEvent(new Event("ui"));
             Behavior_Instance.behaviors =
                 Behavior_Instance.behaviors.filter((behavior) => !behavior.GetIsDestroyed());
-            Behavior_Instance.behaviors.forEach((behavior_a) => {
-                if (behavior_a.GetIsLoaded() && behavior_a.GetIsPhysics()) {
-                    let boundsA = behavior_a.GetBoundingBox();
-                    boundsA?.Update(behavior_a);
-                    Behavior_Instance.behaviors.forEach((behavior_b) => {
-                        if (behavior_a !== behavior_b) {
-                            if (behavior_b.GetIsLoaded() && behavior_b.GetIsPhysics()) {
-                                let boundsB = behavior_b.GetBoundingBox();
-                                boundsB?.Update(behavior_b);
-                                if (boundsB !== null) {
-                                    if (boundsA?.Intersects(boundsB)) {
-                                        behavior_a.SetCollisionEnter(true);
-                                        behavior_a.OnCollisionEnter(behavior_b);
-                                    }
-                                    else {
-                                        if (behavior_a.GetCollisionEnter()) {
-                                            behavior_a.SetCollisionEnter(false);
-                                            behavior_a.OnCollisionExit(behavior_b);
-                                        }
-                                    }
-                                }
-                            }
+            /*Behavior_Instance.behaviors.forEach((behavior_a) => {
+              if (behavior_a.GetIsLoaded() && behavior_a.GetIsPhysics()) {
+                let boundsA =
+                  behavior_a.GetBoundingBox();
+      
+                boundsA?.Update(behavior_a.position);
+      
+                Behavior_Instance.behaviors.forEach((behavior_b) => {
+                  if (behavior_a !== behavior_b) {
+                    if (behavior_b.GetIsLoaded() && behavior_b.GetIsPhysics()) {
+                      let boundsB =
+                        behavior_b.GetBoundingBox();
+      
+                      boundsB?.Update(behavior_b.position);
+      
+                      if (boundsB !== null) {
+                        if (boundsA?.Intersects(boundsB)) {
+                          behavior_a.SetCollisionEnter(true);
+                          behavior_a.OnCollisionEnter(behavior_b);
+                        } else {
+                          if (behavior_a.GetCollisionEnter()) {
+                            behavior_a.SetCollisionEnter(false);
+                            behavior_a.OnCollisionExit(behavior_b);
+                          }
                         }
-                    });
+                      }
+                    }
+                  }
+                })
+              }
+            });*/
+            Behavior_Instance.behaviors.forEach((behavior) => {
+                if (behavior.GetIsLoaded()) {
+                    behavior.Update(deltaTime);
+                    behavior.ApplyTransform();
                 }
             });
-            Behavior_Instance.behaviors.forEach((behavior) => behavior.GetIsLoaded() ? behavior.Update(deltaTime) : {});
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "rgb(31, 31, 31)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             let draws = Behavior_Instance.behaviors.sort((a, b) => a.GetDisplayOrder() - b.GetDisplayOrder());
-            if (__Debug__) {
-                Behavior_Instance.behaviors.forEach((behavior_a) => {
-                    if (behavior_a.GetIsLoaded() && behavior_a.GetIsPhysics()) {
-                        let boundsA = behavior_a.GetBoundingBox();
-                        boundsA?.Update(behavior_a);
-                        boundsA?.DebugDraw(ctx);
-                    }
-                });
-            }
+            /*if (__Debug__) {
+              Behavior_Instance.behaviors.forEach((behavior_a) => {
+                if (behavior_a.GetIsLoaded() && behavior_a.GetIsPhysics()) {
+                  let boundsA =
+                    behavior_a.GetBoundingBox();
+                  boundsA?.Update(behavior_a.position);
+                  boundsA?.DebugDraw(ctx);
+                }
+              });
+            }*/
             draws.forEach((behavior) => behavior.GetIsLoaded() ?
                 behavior.Draw(ctx, deltaTime) : {});
+            /*
+              test physic
+            */
+            physics.Simulate(ctx, deltaTime);
+            /*
+             end test physic
+            */
         };
         requestAnimationFrame(Loop);
         window.dispatchEvent(new Event("loadEngine"));

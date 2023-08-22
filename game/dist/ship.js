@@ -18,7 +18,6 @@ export default class Ship extends jcls.Behavior {
     height = 0;
     width = 0;
     speed;
-    rotation;
     inputs = [];
     cooldown = 0;
     cooldownMax = 0.5;
@@ -28,18 +27,24 @@ export default class Ship extends jcls.Behavior {
         this.position.x = 25;
         this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
         this.speed = 150;
-        this.rotation = 0;
         this.image = new Image();
         Ship.instance = this;
         console.log("Ship created");
+        //this.Instantiate(new Missile(), this);
     }
     Load() {
         this.image.src = './assets/player.png';
         this.image.addEventListener('load', () => {
             this.height = this.image.height;
             this.width = this.image.width;
-            this.boundingBox = new jcls.Bounds(new jcls.Vector2(this.position.x, this.position.y), new jcls.Vector2(this.width, this.height));
+            /*this.boundingBox = new jcls.Bounds(new
+              jcls.Vector2(this.position.x, this.position.y), new
+              jcls.Vector2(this.width, this.height));*/
+            this.shap = new jcls.Box(this.width, this.height);
+            this.shap.center = this.position;
+            this.shap.rotation = this.rotation;
             this.setIsLoaded(true);
+            this.InitPhysics();
         });
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp' || e.key === 'z') {

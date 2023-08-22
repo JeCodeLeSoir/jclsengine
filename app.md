@@ -8,3 +8,7 @@ npx typedoc --tsconfig jclsengine/tsconfig.esm.json && rm -rf ./jclsengine/dist 
 == Git ==
 
 git add -A && git commit -m "update" && git push
+
+
+== itch.io ==
+butler push ./GithubPage jecodelesoir/pioupiou:0.0.2

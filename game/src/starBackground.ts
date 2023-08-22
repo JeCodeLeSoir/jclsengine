@@ -48,6 +48,7 @@ export default class StarBackground extends jcls.Behavior {
     }*/
 
     this.setIsLoaded(true);
+    this.InitPhysics();
   }
 
   Update(deltaTime: number) {

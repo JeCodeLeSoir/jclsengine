@@ -1,0 +1,34 @@
+{
+  "Frames": [
+    {
+      "start": 0,
+      "end": 1,
+      "size": {
+        "width": 98,
+        "height": 98
+      },
+      "img": "blob:http://localhost/e6b8429d-d867-4959-95cd-8dbe7ccc0260",
+      "id": "rect_1_1"
+    },
+    {
+      "start": 1,
+      "end": 5,
+      "size": {
+        "width": 98,
+        "height": 98
+      },
+      "img": "blob:http://localhost/51cb96c4-a67b-48ff-a22b-2e6a1793e37d",
+      "id": "rect_1_4"
+    },
+    {
+      "start": 5,
+      "end": 10,
+      "size": {
+        "width": 98,
+        "height": 98
+      },
+      "img": "blob:http://localhost/5279dffd-ab22-4baf-b04a-eb6d85b85da5",
+      "id": "rect_1_12"
+    }
+  ]
+}

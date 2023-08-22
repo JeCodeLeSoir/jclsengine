@@ -1,4 +1,7 @@
 import Behavior from "./core/behavior.js";
+import Bounds from "./core/bounds.js";
+import Vector2 from "./core/vector2.js";
+import Physics, { PhysicsCollider2d } from "./physics/physics.js";
 
 export class Behavior_Instance {
   static behaviors: Behavior[] = [];
@@ -8,7 +11,6 @@ export class Behavior_Instance {
 }
 
 const __Debug__ = false;
-
 
 
 export default class JCLSEngine {
@@ -24,8 +26,6 @@ export default class JCLSEngine {
 
   constructor(_callback: () => Behavior[]) {
     new Behavior_Instance();
-
-
 
     const canvas: HTMLCanvasElement | null
       = document.querySelector('canvas');
@@ -51,6 +51,30 @@ export default class JCLSEngine {
     _behaviors.forEach((behavior) => Behavior_Instance.behaviors.push(behavior));
 
     Behavior_Instance.behaviors.forEach((behavior) => behavior.Init(ctx));
+
+
+    /*
+           test physic
+        */
+
+    let physics = Physics.Instance;
+
+    /*Behavior_Instance.behaviors.forEach((behavior) => {
+      behavior.On('load', () => {
+        console.log(behavior.GetIsPhysics(), behavior);
+        if (behavior.GetIsPhysics()) {
+          let newp = new PhysicsCollider2d();
+          newp.behavior = behavior;
+          newp.shap = behavior.shap;
+          physics.AddCollider(newp);
+        }
+      })
+    })*/
+
+    /*
+       end test physic
+      */
+
     Behavior_Instance.behaviors.forEach((behavior) => behavior.Load());
 
     let previousTime = 0;
@@ -86,12 +110,12 @@ export default class JCLSEngine {
           !behavior.GetIsDestroyed()
         );
 
-      Behavior_Instance.behaviors.forEach((behavior_a) => {
+      /*Behavior_Instance.behaviors.forEach((behavior_a) => {
         if (behavior_a.GetIsLoaded() && behavior_a.GetIsPhysics()) {
           let boundsA =
             behavior_a.GetBoundingBox();
 
-          boundsA?.Update(behavior_a);
+          boundsA?.Update(behavior_a.position);
 
           Behavior_Instance.behaviors.forEach((behavior_b) => {
             if (behavior_a !== behavior_b) {
@@ -99,7 +123,7 @@ export default class JCLSEngine {
                 let boundsB =
                   behavior_b.GetBoundingBox();
 
-                boundsB?.Update(behavior_b);
+                boundsB?.Update(behavior_b.position);
 
                 if (boundsB !== null) {
                   if (boundsA?.Intersects(boundsB)) {
@@ -116,7 +140,9 @@ export default class JCLSEngine {
             }
           })
         }
-      });
+      });*/
+
+
 
       Behavior_Instance.behaviors.forEach((behavior) => {
         if (behavior.GetIsLoaded()) {
@@ -133,21 +159,34 @@ export default class JCLSEngine {
         a.GetDisplayOrder() - b.GetDisplayOrder()
       );
 
-      if (__Debug__) {
+      /*if (__Debug__) {
         Behavior_Instance.behaviors.forEach((behavior_a) => {
           if (behavior_a.GetIsLoaded() && behavior_a.GetIsPhysics()) {
             let boundsA =
               behavior_a.GetBoundingBox();
-            boundsA?.Update(behavior_a);
+            boundsA?.Update(behavior_a.position);
             boundsA?.DebugDraw(ctx);
           }
         });
-      }
+      }*/
+
+
 
       draws.forEach((behavior) =>
         behavior.GetIsLoaded() ?
           behavior.Draw(ctx, deltaTime) : {}
       );
+
+      /*
+        test physic
+      */
+
+
+      physics.Simulate(ctx, deltaTime);
+
+      /*
+       end test physic
+      */
 
     }
 

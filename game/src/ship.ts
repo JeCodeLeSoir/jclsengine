@@ -23,7 +23,6 @@ export default class Ship extends jcls.Behavior {
   width: number = 0;
 
   speed: number;
-  rotation: number;
 
   inputs: boolean[] = [];
 
@@ -37,12 +36,13 @@ export default class Ship extends jcls.Behavior {
     this.position.x = 25;
     this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
     this.speed = 150;
-    this.rotation = 0;
     this.image = new Image();
 
     Ship.instance = this;
 
     console.log("Ship created");
+
+    //this.Instantiate(new Missile(), this);
   }
 
   Load() {
@@ -51,11 +51,19 @@ export default class Ship extends jcls.Behavior {
       this.height = this.image.height;
       this.width = this.image.width;
 
-      this.boundingBox = new jcls.Bounds(new
+      /*this.boundingBox = new jcls.Bounds(new
         jcls.Vector2(this.position.x, this.position.y), new
-        jcls.Vector2(this.width, this.height));
+        jcls.Vector2(this.width, this.height));*/
+
+      this.shap = new jcls.Box(
+        this.width,
+        this.height
+      );
+      this.shap.center = this.position;
+      this.shap.rotation = this.rotation;
 
       this.setIsLoaded(true);
+      this.InitPhysics();
     })
 
     window.addEventListener('keydown', (e) => {

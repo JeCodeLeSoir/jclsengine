@@ -19,12 +19,13 @@ btnRun?.addEventListener("click", () => {
   let _clip = new jcls.Clip();
   _clip.Load('./assets/musics/gamemusic.mp3');
   let _soundEffect = new jcls.SoundEffect()
-  _soundEffect.SetLoop(true);
-  _soundEffect.PlayOneShot(_clip);
+
+  //_soundEffect.SetLoop(true);
+  //_soundEffect.Play(_clip);
 
   const engine = new jcls.JCLSEngine(() => [
-    new StartText(),
-    new Enemy(),
+    //new StartText(),
+    //new Enemy(),
     new Ship(),
     new AsteroideSpawner(),
     new StarBackground()

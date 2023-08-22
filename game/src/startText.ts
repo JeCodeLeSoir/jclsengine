@@ -15,8 +15,12 @@ export default class StartText extends jcls.Behavior {
   }
 
   Init(ctx: CanvasRenderingContext2D): void {
-    this.setIsLoaded(true);
     this.width = ctx.measureText(this.text).width;
+  }
+
+  Load(): void {
+    this.InitPhysics();
+    this.setIsLoaded(true);
   }
 
   Update(deltaTime: number) {

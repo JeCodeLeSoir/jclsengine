@@ -11,6 +11,8 @@ export default class SoundEffect {
     isLoop: boolean;
     SetLoop(isLoop: boolean): void;
     constructor();
+    AudioFadeIn(clip: Clip, duration: number, targetVolume: number, startVolume: number, callback: () => void): void;
+    AudioFadeOut(clip: Clip, duration: number, targetVolume: number, startVolume: number, callback: () => void): void;
     Play(clip: Clip): void;
     Stop(): void;
     Pause(): void;

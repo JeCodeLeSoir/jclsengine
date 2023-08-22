@@ -24,11 +24,24 @@ export default class Asteroide extends jcls.Behavior {
       this.height = this.image.height;
       this.width = this.image.width;
 
-      this.boundingBox = new jcls.Bounds(new
-        jcls.Vector2(this.position.x, this.position.y), new
-        jcls.Vector2(this.width, this.height));
+      /*this.boundingBox = new jcls.Bounds(
+        new jcls.Vector2(this.position.x, this.position.y),
+        new jcls.Vector2(this.width, this.height));*/
+
+      this.shap = new jcls.Box(
+        this.width,
+        this.height
+      );
+      this.shap.center = this.position;
+      this.shap.rotation = this.rotation;
+
+      this.physicsCollider = new jcls.PhysicsCollider2d();
+
+      this.physicsCollider.mass = Math.PI * this.width * this.height;
+      console.log(this.physicsCollider.mass);
 
       this.setIsLoaded(true);
+      this.InitPhysics();
     })
   }
 

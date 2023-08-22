@@ -10,8 +10,11 @@ export default class StartText extends jcls.Behavior {
         this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
     }
     Init(ctx) {
-        this.setIsLoaded(true);
         this.width = ctx.measureText(this.text).width;
+    }
+    Load() {
+        this.InitPhysics();
+        this.setIsLoaded(true);
     }
     Update(deltaTime) {
         this.position.x -= 60 * deltaTime;

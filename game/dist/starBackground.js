@@ -34,6 +34,7 @@ export default class StarBackground extends jcls.Behavior {
           this.countParticul++;
         }*/
         this.setIsLoaded(true);
+        this.InitPhysics();
     }
     Update(deltaTime) {
         /* Generate new stars */

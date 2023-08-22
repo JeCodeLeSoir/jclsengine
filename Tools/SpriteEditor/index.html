@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/SpriteEditor.css">
+</head>
+
+<body>
+  <div id="menu">
+    <ul>
+      <li>
+        <button id="OpenFile">
+          Open file Or Open Image
+        </button>
+      </li>
+      <li>
+        <button id="SaveFile">
+          Save file
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <div id="menu-generator">
+    <form id="col-lig-form-gen">
+      <h3>
+        Generate rect list
+      </h3>
+      <input type="number" id="colonnes" placeholder="colonnes" value="10">
+      <input type="number" id="lignes" placeholder="lignes" value="10">
+      <input type="number" hidden id="margin" placeholder="margin" value="0">
+      <button id="generate">
+        Generate
+      </button>
+    </form>
+
+
+  </div>
+  <canvas>
+  </canvas>
+  <script type="module" src="./src/app.js"></script>
+</body>
+
+</html>

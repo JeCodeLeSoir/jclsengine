@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    body {
+      width: 100%;
+      height: 100%;
+
+      margin: 0;
+      padding: 0;
+    }
+
+    canvas {
+      background-color: #000;
+
+      position: fixed;
+      width: 100%;
+      height: 100%;
+
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+  </canvas>
+  <script type="module">
+    /*Create Sprite Editor*/
+
+    const canvas = document.querySelector('canvas');
+    if (canvas === null) {
+      throw new Error("Canvas not found");
+    }
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (ctx === null) {
+      throw new Error("Canvas context not found");
+    }
+    let imgLoad = null;
+    const img = new Image();
+
+    img.src = "http://localhost/SpaceTest/autre/pngfind.com-explosion-sprite-png-4289579.png";
+
+    img.onload = () => {
+      imgLoad = img;
+
+
+    }
+
+    /* scroll */
+    let zoom = 100;
+    let position = { x: 0, y: 0 };
+
+    let IsCreateRect = {
+      IsActif: false,
+      Start: { x: 0, y: 0 },
+      End: { x: 0, y: 0 },
+
+      position: { x: 0, y: 0 },
+      size: { w: 0, h: 0 },
+    }
+
+    let centerX = 0;
+    let centerY = 0;
+
+    let RectSaves = [];
+    let SelectRect = -1;
+    let SelectRectMove = -1;
+
+
+    let handleSize = 20; // Taille des poignées
+    let corners = [];
+    let resizing = false;
+    let resizingRect = null;
+    let resizingStart = null;
+    let initialSize = null;
+    let initialPosition = null;
+    let resizingCorner = null;
+
+    let Inputs = []
+
+    document.addEventListener('keydown', (e) => {
+      Inputs[e.key] = true;
+    });
+
+    document.addEventListener('keyup', (e) => {
+      Inputs[e.key] = false;
+    });
+
+    document.addEventListener('wheel', (e) => {
+      zoom -= 0.1 * e.deltaY;
+
+      zoom = Math.max(1, zoom);
+      zoom = Math.min(1000, zoom);
+    });
+
+    let drag = false;
+
+    function OnSelectRect(e) {
+
+      for (let i = 0; i < RectSaves.length; i++) {
+        RectSaves[i].id = i;
+        RectSaves[i].Select = false;
+      }
+
+      let sortedRectSaves = [...RectSaves].sort((a, b) => {
+        const sizeA = a.size.w * a.size.h;
+        const sizeB = b.size.w * b.size.h;
+        return sizeB - sizeA;
+      });
+
+      sortedRectSaves = sortedRectSaves.reverse();
+
+      for (let i = 0; i < sortedRectSaves.length; i++) {
+        let rect = sortedRectSaves[i];
+
+        let rx = centerX + rect.position.x * zoom;
+        let ry = centerY + rect.position.y * zoom;
+        let rw = rect.size.w * zoom;
+        let rh = rect.size.h * zoom;
+
+        if (e.clientX > rx + position.x
+          && e.clientX < rx + position.x + rw
+          && e.clientY > ry + position.y
+          && e.clientY < ry + position.y + rh
+        ) {
+          SelectRect = sortedRectSaves[i].id;
+          SelectRectMove = SelectRect;
+          RectSaves[SelectRect].Select = true;
+
+          console.log("Select");
+
+          break;
+        }
+      }
+
+      for (let i = 0; i < sortedRectSaves.length; i++) {
+        let rect = sortedRectSaves[i];
+        let rx = centerX + rect.position.x * zoom;
+        let ry = centerY + rect.position.y * zoom;
+        let rw = rect.size.w * zoom;
+        let rh = rect.size.h * zoom;
+
+        corners = [
+          { x: rx, y: ry },
+          { x: rx + rw, y: ry },
+          { x: rx + rw, y: ry + rh },
+          { x: rx, y: ry + rh },
+        ];
+
+        for (let corner of corners) {
+          if (
+            e.clientX > corner.x + position.x - handleSize / 2 &&
+            e.clientX < corner.x + position.x + handleSize / 2 &&
+            e.clientY > corner.y + position.y - handleSize / 2 &&
+            e.clientY < corner.y + position.y + handleSize / 2
+          ) {
+            // La souris est sur une poignée, démarrer le redimensionnement
+            SelectRect = sortedRectSaves[i].id;
+            SelectRectMove = SelectRect;
+            RectSaves[SelectRect].Select = true;
+
+            console.log("resizing");
+            resizing = true;
+            resizingRect = rect;
+            resizingCorner = corner;
+
+            resizingStart = { x: e.clientX, y: e.clientY };
+            initialPosition = { x: rect.position.x, y: rect.position.y };
+            initialSize = { w: rect.size.w, h: rect.size.h };
+            break;
+          }
+        }
+
+      }
+
+    }
+
+    function drawResizeHandles(x, y, w, h) {
+
+      // Coins du rectangle
+      const corners = [
+        { x: x, y: y },
+        { x: x + w, y: y },
+        { x: x + w, y: y + h },
+        { x: x, y: y + h },
+      ];
+
+      for (let corner of corners) {
+        ctx.fillStyle = "#ff0000";
+        ctx.fillRect(corner.x - handleSize / 2, corner.y - handleSize / 2, handleSize, handleSize);
+      }
+    }
+
+    function drawGrid(_w, _h) {
+      if (imgLoad) {
+        const opacity = 0.5; // Opacité de la grille
+        const lineWidth = 1; // Épaisseur de la ligne de la grille
+
+        ctx.strokeStyle = `rgba(204, 204, 204, ${opacity})`;
+        ctx.lineWidth = lineWidth;
+
+        let gridSize = 10;
+
+        let mw = imgLoad.width / 100;
+        let mh = imgLoad.height / 100;
+
+        //let w = zoom * mw
+        //let h = zoom * mh
+
+        //let zoomedImageWidth = imgLoad.width * zoom;
+        //let zoomedImageHeight = imgLoad.height * zoom;
+
+        let w = mw;
+        let h = mh;
+
+        let centerX = canvas.width / 2 - (w * zoom) / 2;
+        let centerY = canvas.height / 2 - (h * zoom) / 2;
+
+        let zoomedImageWidth = w * zoom
+        let zoomedImageHeight = h * zoom
+
+        let numGridCols = Math.ceil(zoomedImageWidth / gridSize);
+        let numGridRows = Math.ceil(zoomedImageHeight / gridSize);
+
+        let startX = centerX + position.x;
+        let startY = centerY + position.y;
+
+        for (let col = 0; col < numGridCols; col++) {
+          const x = startX + col * gridSize;
+          ctx.beginPath();
+          ctx.moveTo(x, startY);
+          ctx.lineTo(x, startY + zoomedImageHeight);
+          ctx.stroke();
+        }
+
+        for (let row = 0; row < numGridRows; row++) {
+          const y = startY + row * gridSize;
+          ctx.beginPath();
+          ctx.moveTo(startX, y);
+          ctx.lineTo(startX + zoomedImageWidth, y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    document.addEventListener('pointerdown', (e) => {
+      if (e.button === 1) {
+        drag = true;
+        return;
+      }
+
+      if (e.button === 0
+        && Inputs["Shift"] === true
+      ) {
+        IsCreateRect.IsActif = true;
+        IsCreateRect.Start.x = e.clientX;
+        IsCreateRect.Start.y = e.clientY;
+        return;
+      }
+
+      if (e.button === 0) {
+        OnSelectRect(e)
+        return;
+      }
+
+    });
+
+    document.addEventListener('pointerup', (e) => {
+      if (e.button === 1) {
+        drag = false;
+        return;
+      }
+
+      if (e.button === 0
+        && IsCreateRect.IsActif === true
+      ) {
+        IsCreateRect.IsActif = false;
+
+        let localposition = { x: 0, y: 0 };
+
+        localposition.x = IsCreateRect.Start.x - position.x;
+        localposition.y = IsCreateRect.Start.y - position.y;
+
+        RectSaves.push({
+          id: RectSaves.length,
+          Select: false,
+          position: {
+            x: (localposition.x - centerX) / zoom,
+            y: (localposition.y - centerY) / zoom
+          },
+          size: {
+            w: ((IsCreateRect.End.x - IsCreateRect.Start.x) / zoom),
+            h: ((IsCreateRect.End.y - IsCreateRect.Start.y) / zoom)
+          },
+        });
+
+        return;
+      }
+
+      if (e.button === 0) {
+        SelectRectMove = -1;
+
+        resizing = false;
+        resizingRect = null;
+
+        return;
+      }
+    });
+
+    document.addEventListener('pointermove', (e) => {
+      if (drag) {
+        position.x += e.movementX;
+        position.y += e.movementY;
+      }
+
+      if (IsCreateRect) {
+        IsCreateRect.End.x = e.clientX;
+        IsCreateRect.End.y = e.clientY;
+      }
+
+      if (SelectRectMove !== -1 && !resizing) {
+        let rect = RectSaves[SelectRectMove];
+
+        let rx = centerX + rect.position.x * zoom;
+        let ry = centerY + rect.position.y * zoom;
+        let rw = rect.size.w * zoom;
+        let rh = rect.size.h * zoom;
+
+        rect.position.x += e.movementX / zoom;
+        rect.position.y += e.movementY / zoom;
+
+        rect.position.x = Math.max(0, rect.position.x);
+        rect.position.y = Math.max(0, rect.position.y);
+
+        rect.position.x = Math.min(imgLoad.width - rect.size.w, rect.position.x);
+        rect.position.y = Math.min(imgLoad.height - rect.size.h, rect.position.y);
+      }
+
+      if (SelectRectMove !== -1 && resizing) {
+        const dx = e.clientX - resizingStart.x;
+        const dy = e.clientY - resizingStart.y;
+
+        if (resizingCorner === corners[0] || resizingCorner === corners[3]) {
+          resizingRect.position.x = (initialPosition.x + dx / zoom);
+          resizingRect.size.w = (initialSize.w - dx / zoom);
+        } else {
+          resizingRect.size.w = (initialSize.w + dx / zoom);
+        }
+
+        if (resizingCorner === corners[0] || resizingCorner === corners[1]) {
+          resizingRect.position.y = (initialPosition.y + dy / zoom);
+          resizingRect.size.h = (initialSize.h - dy / zoom);
+        } else {
+          resizingRect.size.h = (initialSize.h + dy / zoom);
+        }
+      }
+    });
+
+    document.addEventListener('contextmenu', (e) => {
+      // e.preventDefault();
+    });
+
+    requestAnimationFrame(draw);
+
+    function draw() {
+      requestAnimationFrame(draw);
+
+
+      if (Inputs["Delete"] === true) {
+        if (SelectRect !== -1) {
+          RectSaves.splice(SelectRect, 1);
+          SelectRect = -1;
+        }
+      }
+
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+
+      if (imgLoad !== null) {
+
+        let x = position.x;
+        let y = position.y;
+
+        let mw = imgLoad.width / 100;
+        let mh = imgLoad.height / 100;
+
+        let w = zoom * mw
+        let h = zoom * mh
+
+        centerX = canvas.width / 2 - (imgLoad.width * zoom) / 2;
+        centerY = canvas.height / 2 - (imgLoad.height * zoom) / 2;
+
+        ctx.drawImage(imgLoad,
+          x + (canvas.width / 2) - (w / 2),
+          y + (canvas.height / 2) - (h / 2),
+          w,
+          h
+        );
+
+        drawGrid(w, h);
+
+        for (let i = 0; i < RectSaves.length; i++) {
+
+          let rect = RectSaves[i];
+
+          let rx = centerX + rect.position.x * zoom;
+          let ry = centerY + rect.position.y * zoom;
+          let rw = rect.size.w * zoom;
+          let rh = rect.size.h * zoom;
+
+          if (rect.Select === true)
+            ctx.strokeStyle = "#0000ff";
+          else
+            ctx.strokeStyle = "#ff0000";
+
+          ctx.lineWidth = 2;
+          ctx.strokeRect(
+            rx + position.x,
+            ry + position.y,
+            rw,
+            rh
+          );
+
+          if (rect.Select === true)
+            drawResizeHandles(rx + position.x, ry + position.y, rw, rh);
+        }
+
+
+
+      }
+
+      if (IsCreateRect.IsActif) {
+        //red
+        ctx.strokeStyle = "#00ff00";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+          IsCreateRect.Start.x,
+          IsCreateRect.Start.y,
+          (IsCreateRect.End.x - IsCreateRect.Start.x),
+          (IsCreateRect.End.y - IsCreateRect.Start.y)
+        );
+      }
+
+
+
+    }
+
+  </script>
+</body>
+
+</html>

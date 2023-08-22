@@ -35,6 +35,26 @@ export default class SoundEffect {
 
   }
 
+  AudioFadeIn(
+    clip: Clip,
+    duration: number,
+    targetVolume: number,
+    startVolume: number,
+    callback: () => void
+  ) {
+
+  }
+
+  AudioFadeOut(
+    clip: Clip,
+    duration: number,
+    targetVolume: number,
+    startVolume: number,
+    callback: () => void
+  ) {
+
+  }
+
   Play(clip: Clip) {
     let audio = clip.GetAudio()
     if (audio) {

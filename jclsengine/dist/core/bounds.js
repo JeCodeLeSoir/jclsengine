@@ -14,8 +14,17 @@ export default class Bounds {
         this.max.x = center.x + size.x / 2;
         this.max.y = center.y + size.y / 2;
     }
-    Update(behavior) {
-        this.center = behavior.position;
+    /*Update(behavior: Behavior) {
+      this.center = behavior.position;
+  
+      this.min.x = this.center.x - this.size.x / 2;
+      this.min.y = this.center.y - this.size.y / 2;
+  
+      this.max.x = this.center.x + this.size.x / 2;
+      this.max.y = this.center.y + this.size.y / 2;
+    }*/
+    Update(position) {
+        this.center = position;
         this.min.x = this.center.x - this.size.x / 2;
         this.min.y = this.center.y - this.size.y / 2;
         this.max.x = this.center.x + this.size.x / 2;

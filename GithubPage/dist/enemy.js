@@ -9,7 +9,6 @@ export default class Enemy extends jcls.Behavior {
     height = 0;
     width = 0;
     speed;
-    rotation;
     cooldown = 1;
     cooldownMax = 1.5;
     constructor() {
@@ -17,7 +16,6 @@ export default class Enemy extends jcls.Behavior {
         this.position.x = jcls.Behavior_Instance.SCREEN_WIDTH + 10;
         this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
         this.speed = 150;
-        this.rotation = 0;
         this.image = new Image();
         Enemy.instance = this;
     }
@@ -26,8 +24,14 @@ export default class Enemy extends jcls.Behavior {
         this.image.addEventListener('load', () => {
             this.height = this.image.height;
             this.width = this.image.width;
-            this.boundingBox = new jcls.Bounds(new jcls.Vector2(this.position.x, this.position.y), new jcls.Vector2(this.width, this.height));
+            /*this.boundingBox = new jcls.Bounds(new
+              jcls.Vector2(this.position.x, this.position.y), new
+              jcls.Vector2(this.width, this.height));*/
+            this.shap = new jcls.Box(this.width, this.height);
+            this.shap.center = this.position;
+            this.shap.rotation = this.rotation;
             this.setIsLoaded(true);
+            this.InitPhysics();
         });
     }
     zigzag = false;
