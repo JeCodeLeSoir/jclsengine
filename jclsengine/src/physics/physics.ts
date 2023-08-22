@@ -216,7 +216,6 @@ export class ColliderFunc {
     /* Check Collision entre deux rectangles */
     /* Separating Axis Theorem */
 
-
     let overlap: number = 0;
     let overlapN: Vector2 = new Vector2();
 
