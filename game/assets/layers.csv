@@ -1,0 +1,6 @@
+==>,Asteroide,Missile_Player,Missile_Enemy,Enemy,Player,  
+Player,✔,✘,✔,✔,✔,
+Enemy,✔,✔,✘,✔,✔,
+Missile_Enemy,✔,✔,✘,✘,✔,
+Missile_Player,✔,✔,✔,✔,✘,
+Asteroide,✔,✔,✔,✔,✔,

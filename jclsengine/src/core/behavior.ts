@@ -5,6 +5,8 @@ import Vector2 from "./vector2.js";
 
 export default abstract class Behavior {
 
+  private _IsEnabled: boolean = true;
+
   private _isLoaded: boolean = false;
   private _isDestroyed: boolean = false;
   private _collisionEnter: boolean = false;
@@ -26,6 +28,14 @@ export default abstract class Behavior {
     this._parent = parent;
     this.localPosition =
       this.position.Subtract(this._parent.position);
+  }
+
+  set IsEnabled(isEnabled: boolean) {
+    this._IsEnabled = isEnabled;
+  }
+
+  get IsEnabled() {
+    return this._IsEnabled;
   }
 
   public GetParent() {
@@ -73,6 +83,13 @@ export default abstract class Behavior {
 
   }
 
+  Copy(): Behavior {
+    let x = JSON.parse(
+      JSON.stringify(this)
+    );
+    return x;
+  }
+
   InitPhysics() {
     let physics = Physics.Instance;
     if (this.GetIsPhysics()) {
@@ -96,9 +113,7 @@ export default abstract class Behavior {
   }
 
   Update(deltaTime: number) { }
-
-  Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
-  }
+  Draw(ctx: CanvasRenderingContext2D, deltaTime: number) { }
 
   Destroy() {
     this._isDestroyed = true;
@@ -124,7 +139,7 @@ export default abstract class Behavior {
     return this._isLoaded;
   }
 
-  Instantiate<T extends Behavior>(behavior: T,
+  static Instantiate<T extends Behavior>(behavior: T,
     behavior_parent: Behavior | null = null): T {
     Behavior_Instance.behaviors.push(behavior);
 
@@ -137,7 +152,10 @@ export default abstract class Behavior {
     return behavior;
   }
 
-
+  Instantiate<T extends Behavior>(behavior: T,
+    behavior_parent: Behavior | null = null): T {
+    return Behavior.Instantiate(behavior, behavior_parent);
+  }
 
   setIsLoaded(isLoaded: boolean) {
     this._isLoaded = isLoaded;

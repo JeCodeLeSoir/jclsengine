@@ -1,7 +1,5 @@
 import * as jcls from "jclsengine"
-
 import Asteroide from "./asteroide.js";
-
 
 export default class AsteroideSpawner extends jcls.Behavior {
 
@@ -36,15 +34,12 @@ export default class AsteroideSpawner extends jcls.Behavior {
         asteroide.position.x = x;
         asteroide.position.y = y;
 
-
         this.countAsteroide++;
       }
       this.interval = 0;
     }
-
     this.interval += 0.5 * deltaTime;
   }
-
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
 

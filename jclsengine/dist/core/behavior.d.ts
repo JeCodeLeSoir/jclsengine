@@ -1,6 +1,7 @@
 import { ColliderShap, PhysicsCollider2d } from "../physics/physics.js";
 import Vector2 from "./vector2.js";
 export default abstract class Behavior {
+    private _IsEnabled;
     private _isLoaded;
     private _isDestroyed;
     private _collisionEnter;
@@ -11,6 +12,8 @@ export default abstract class Behavior {
     physicsCollider: PhysicsCollider2d | null;
     shap: ColliderShap | null;
     SetParent(parent: Behavior): void;
+    set IsEnabled(isEnabled: boolean);
+    get IsEnabled(): boolean;
     GetParent(): Behavior | null;
     localPosition: Vector2;
     position: Vector2;
@@ -24,6 +27,7 @@ export default abstract class Behavior {
     GetDisplayOrder(): number;
     Load(): void;
     Init(ctx: CanvasRenderingContext2D): void;
+    Copy(): Behavior;
     InitPhysics(): void;
     ApplyTransform(): void;
     Update(deltaTime: number): void;
@@ -34,6 +38,7 @@ export default abstract class Behavior {
     OnCollisionExit(other: Behavior): void;
     GetIsDestroyed(): boolean;
     GetIsLoaded(): boolean;
+    static Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null): T;
     Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null): T;
     setIsLoaded(isLoaded: boolean): void;
 }

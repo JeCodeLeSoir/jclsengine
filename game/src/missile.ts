@@ -4,7 +4,7 @@ import Ship from "./ship.js";
 export default class Missile extends jcls.Behavior {
 
   protected IsPhysics: boolean = true;
-  protected Tag: string = "Missile";
+  protected Tag: string = "Player_Missile";
 
   inverted: boolean = false;
 
@@ -50,21 +50,28 @@ export default class Missile extends jcls.Behavior {
       this._clipExplosion.Load('./assets/sounds/8bitexplosion.mp3');
 
       this.setIsLoaded(true);
+
       this.InitPhysics();
+
+      if (this.physicsCollider !== null)
+        this.physicsCollider.LayerName = "Missile_Player";
     })
+
   }
 
   Update(deltaTime: number) {
     if (this.inverted) {
       this.position.x -= this.speed * deltaTime;
       if (this.position.x < -this.width / 2) {
-        this.Destroy();
+        //this.Destroy();
+        jcls.BehaviorPooling.Instance.Free(this);
       }
     }
     else {
       this.position.x += this.speed * deltaTime;
       if (this.position.x > jcls.Behavior_Instance.SCREEN_WIDTH + 2) {
-        this.Destroy();
+        //this.Destroy();
+        jcls.BehaviorPooling.Instance.Free(this);
       }
     }
   }
@@ -74,23 +81,30 @@ export default class Missile extends jcls.Behavior {
   }
 
   OnCollisionEnter(other: jcls.Behavior): void {
-    if (this.Tag === "Missile") {
-      if (other.GetTag() === "Asteroide") {
-        this._soundEffect.PlayOneShot(this._clipExplosion);
-        this.Destroy();
-        Ship.instance.score += 100;
-      }
-      if (other.GetTag() === "Enemy") {
-        this._soundEffect.PlayOneShot(this._clipExplosion);
-      }
+    console.log("OnCollisionEnter: " + other.GetTag());
+
+    if (other.GetTag() === "Asteroide") {
+      Ship.instance.score += 100;
+      jcls.BehaviorPooling.Instance.Free(this);
+      this._soundEffect.PlayOneShot(this._clipExplosion);
+    }
+
+    if (other.GetTag() === "Enemy") {
+      this._soundEffect.PlayOneShot(this._clipExplosion);
+    }
+
+    /*if (this.Tag === "Missile") {
+     
     }
     else {
       if (other.GetTag() === "Player") {
         this._soundEffect.PlayOneShot(this._clipExplosion);
-        this.Destroy();
+        //this.Destroy();
+        jcls.BehaviorPooling.Instance.Free(this);
         other.Destroy();
+
       }
-    }
+    }*/
   }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
@@ -98,17 +112,13 @@ export default class Missile extends jcls.Behavior {
     if (this.inverted) {
       ctx.save();
       ctx.scale(-1, 1);
-
       ctx.drawImage(this.image,
         Math.round(-this.position.x - this.width / 2),
         Math.round(this.position.y - this.height / 2)
       );
-
       ctx.restore();
-
     }
     else {
-
       ctx.drawImage(this.image,
         Math.round(this.position.x - this.width / 2),
         Math.round(this.position.y - this.height / 2)

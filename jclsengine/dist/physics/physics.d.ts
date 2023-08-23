@@ -13,7 +13,6 @@ export declare class ColliderShap {
     center: Vector2;
     rotation: number;
     UpdateShap(center: Vector2, rotation?: number): void;
-    getAxes(): Vector2[];
     project(axis: Vector2): Projection;
     Calculate(): void;
     CheckCollisionWith(ctx: any, other: ColliderShap): MTV;
@@ -66,6 +65,9 @@ export declare class PhysicsCollider2d {
     restitution: number;
     friction: number;
     drag: number;
+    private layerName;
+    get LayerName(): string;
+    set LayerName(layerName: string);
     DebugCollider(ctx: any): void;
     UpdateShap(): void;
     static CheckCollision(ctx: any, a: PhysicsCollider2d, b: PhysicsCollider2d): MTV;
@@ -84,5 +86,5 @@ export default class Physics {
     AddCollider(collider: PhysicsCollider2d): void;
     RemoveCollider(collider: PhysicsCollider2d): void;
     Simulate(ctx: any, dt: number): void;
-    InternalStep(ctx: any, dt: any): void;
+    private InternalStep;
 }

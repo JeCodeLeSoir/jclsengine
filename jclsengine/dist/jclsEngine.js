@@ -1,3 +1,4 @@
+import Input from "./core/input.js";
 import Physics from "./physics/physics.js";
 export class Behavior_Instance {
     static behaviors = [];
@@ -70,6 +71,9 @@ export default class JCLSEngine {
             }
             /* call event ui */
             window.dispatchEvent(new Event("ui"));
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgb(31, 31, 31)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             Behavior_Instance.behaviors =
                 Behavior_Instance.behaviors.filter((behavior) => !behavior.GetIsDestroyed());
             /*Behavior_Instance.behaviors.forEach((behavior_a) => {
@@ -104,14 +108,11 @@ export default class JCLSEngine {
               }
             });*/
             Behavior_Instance.behaviors.forEach((behavior) => {
-                if (behavior.GetIsLoaded()) {
+                if (behavior.GetIsLoaded() && behavior.IsEnabled) {
                     behavior.Update(deltaTime);
                     behavior.ApplyTransform();
                 }
             });
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "rgb(31, 31, 31)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
             let draws = Behavior_Instance.behaviors.sort((a, b) => a.GetDisplayOrder() - b.GetDisplayOrder());
             /*if (__Debug__) {
               Behavior_Instance.behaviors.forEach((behavior_a) => {
@@ -123,12 +124,13 @@ export default class JCLSEngine {
                 }
               });
             }*/
-            draws.forEach((behavior) => behavior.GetIsLoaded() ?
+            draws.forEach((behavior) => behavior.GetIsLoaded() && behavior.IsEnabled ?
                 behavior.Draw(ctx, deltaTime) : {});
             /*
               test physic
             */
             physics.Simulate(ctx, deltaTime);
+            Input.Instance.Update(deltaTime);
             /*
              end test physic
             */

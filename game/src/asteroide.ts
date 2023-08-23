@@ -1,5 +1,4 @@
 import * as jcls from "jclsengine"
-
 import AsteroideSpawner from "./asteroideSpawner.js";
 
 export default class Asteroide extends jcls.Behavior {
@@ -42,6 +41,9 @@ export default class Asteroide extends jcls.Behavior {
 
       this.setIsLoaded(true);
       this.InitPhysics();
+
+      if (this.physicsCollider !== null)
+        this.physicsCollider.LayerName = "Asteroide";
     })
   }
 
@@ -64,7 +66,7 @@ export default class Asteroide extends jcls.Behavior {
   }
 
   OnCollisionEnter(other: jcls.Behavior): void {
-    if (other.GetTag() === "Missile") {
+    if (other.GetTag() === "Player_Missile") {
       this.Destroy();
     }
   }

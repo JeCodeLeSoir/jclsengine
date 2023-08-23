@@ -27,6 +27,8 @@ export default class Asteroide extends jcls.Behavior {
             console.log(this.physicsCollider.mass);
             this.setIsLoaded(true);
             this.InitPhysics();
+            if (this.physicsCollider !== null)
+                this.physicsCollider.LayerName = "Asteroide";
         });
     }
     Update(deltaTime) {
@@ -42,7 +44,7 @@ export default class Asteroide extends jcls.Behavior {
         AsteroideSpawner.instance.AsteroideOnDestroy(this);
     }
     OnCollisionEnter(other) {
-        if (other.GetTag() === "Missile") {
+        if (other.GetTag() === "Player_Missile") {
             this.Destroy();
         }
     }

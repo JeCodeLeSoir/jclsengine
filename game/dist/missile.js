@@ -2,7 +2,7 @@ import * as jcls from "jclsengine";
 import Ship from "./ship.js";
 export default class Missile extends jcls.Behavior {
     IsPhysics = true;
-    Tag = "Missile";
+    Tag = "Player_Missile";
     inverted = false;
     setInverted(inverted) {
         this.inverted = inverted;
@@ -31,42 +31,50 @@ export default class Missile extends jcls.Behavior {
             this._clipExplosion.Load('./assets/sounds/8bitexplosion.mp3');
             this.setIsLoaded(true);
             this.InitPhysics();
+            if (this.physicsCollider !== null)
+                this.physicsCollider.LayerName = "Missile_Player";
         });
     }
     Update(deltaTime) {
         if (this.inverted) {
             this.position.x -= this.speed * deltaTime;
             if (this.position.x < -this.width / 2) {
-                this.Destroy();
+                //this.Destroy();
+                jcls.BehaviorPooling.Instance.Free(this);
             }
         }
         else {
             this.position.x += this.speed * deltaTime;
             if (this.position.x > jcls.Behavior_Instance.SCREEN_WIDTH + 2) {
-                this.Destroy();
+                //this.Destroy();
+                jcls.BehaviorPooling.Instance.Free(this);
             }
         }
     }
     OnDestroy() {
     }
     OnCollisionEnter(other) {
-        if (this.Tag === "Missile") {
-            if (other.GetTag() === "Asteroide") {
-                this._soundEffect.PlayOneShot(this._clipExplosion);
-                this.Destroy();
-                Ship.instance.score += 100;
-            }
-            if (other.GetTag() === "Enemy") {
-                this._soundEffect.PlayOneShot(this._clipExplosion);
-            }
+        console.log("OnCollisionEnter: " + other.GetTag());
+        if (other.GetTag() === "Asteroide") {
+            Ship.instance.score += 100;
+            jcls.BehaviorPooling.Instance.Free(this);
+            this._soundEffect.PlayOneShot(this._clipExplosion);
+        }
+        if (other.GetTag() === "Enemy") {
+            this._soundEffect.PlayOneShot(this._clipExplosion);
+        }
+        /*if (this.Tag === "Missile") {
+         
         }
         else {
-            if (other.GetTag() === "Player") {
-                this._soundEffect.PlayOneShot(this._clipExplosion);
-                this.Destroy();
-                other.Destroy();
-            }
-        }
+          if (other.GetTag() === "Player") {
+            this._soundEffect.PlayOneShot(this._clipExplosion);
+            //this.Destroy();
+            jcls.BehaviorPooling.Instance.Free(this);
+            other.Destroy();
+    
+          }
+        }*/
     }
     Draw(ctx, deltaTime) {
         if (this.inverted) {

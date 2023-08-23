@@ -2,6 +2,7 @@ import { Behavior_Instance } from "../jclsEngine.js";
 import Physics, { PhysicsCollider2d } from "../physics/physics.js";
 import Vector2 from "./vector2.js";
 export default class Behavior {
+    _IsEnabled = true;
     _isLoaded = false;
     _isDestroyed = false;
     _collisionEnter = false;
@@ -19,6 +20,12 @@ export default class Behavior {
         this._parent = parent;
         this.localPosition =
             this.position.Subtract(this._parent.position);
+    }
+    set IsEnabled(isEnabled) {
+        this._IsEnabled = isEnabled;
+    }
+    get IsEnabled() {
+        return this._IsEnabled;
     }
     GetParent() {
         return this._parent;
@@ -51,6 +58,10 @@ export default class Behavior {
     Load() { }
     Init(ctx) {
     }
+    Copy() {
+        let x = JSON.parse(JSON.stringify(this));
+        return x;
+    }
     InitPhysics() {
         let physics = Physics.Instance;
         if (this.GetIsPhysics()) {
@@ -67,8 +78,7 @@ export default class Behavior {
         }
     }
     Update(deltaTime) { }
-    Draw(ctx, deltaTime) {
-    }
+    Draw(ctx, deltaTime) { }
     Destroy() {
         this._isDestroyed = true;
         if (this.GetIsPhysics()) {
@@ -85,13 +95,16 @@ export default class Behavior {
     GetIsLoaded() {
         return this._isLoaded;
     }
-    Instantiate(behavior, behavior_parent = null) {
+    static Instantiate(behavior, behavior_parent = null) {
         Behavior_Instance.behaviors.push(behavior);
         behavior.Load();
         if (behavior_parent !== null) {
             behavior.SetParent(behavior_parent);
         }
         return behavior;
+    }
+    Instantiate(behavior, behavior_parent = null) {
+        return Behavior.Instantiate(behavior, behavior_parent);
     }
     setIsLoaded(isLoaded) {
         this._isLoaded = isLoaded;

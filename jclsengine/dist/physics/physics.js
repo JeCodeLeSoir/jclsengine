@@ -1,11 +1,12 @@
 import Vector2 from "../core/vector2.js";
-/* List of Physics Colliders 2d */
-/*export enum Collider2d {
+import { Layers } from "./layers.js";
+const _Debug_ = false;
+/* List of Physics
   Box,
   Circle,
   Polygon,
   Capsule,
-}*/
+*/
 export class Projection {
     min = 0;
     max = 0;
@@ -31,18 +32,6 @@ export class ColliderShap {
         this.center = center;
         this.rotation = rotation;
         this.Calculate();
-    }
-    getAxes() {
-        const axes = [];
-        const corners = this.corners;
-        for (let i = 0; i < corners.length; i++) {
-            const corner = corners[i];
-            //const nextCorner = corners[i + 1 === corners.length ? 0 : i + 1].Clone();
-            //const edge = nextCorner.Subtract(corner);
-            //const normal = new Vector2(edge.y, -edge.x);
-            axes.push(corner.Normalized);
-        }
-        return axes;
     }
     project(axis) {
         const corners = this.corners;
@@ -87,11 +76,8 @@ export class ColliderFunc {
     static CalculeSAT(ctx, box_A, box_B, corners_array) {
         let overlap = Number.MAX_VALUE;
         let overlapN = new Vector2();
-        //let axes_a = box_A.getAxes();
-        //let corners_array = box_A.corners;
         for (let i = 0; i < corners_array.length; i++) {
             let _corner = corners_array[i];
-            //let axis = axes_a[i];
             let nextCorner = null;
             if (i + 1 === corners_array.length) {
                 nextCorner = corners_array[0];
@@ -104,22 +90,24 @@ export class ColliderFunc {
             let axis = normal.Normalized;
             let p1 = box_A.project(axis);
             let p2 = box_B.project(axis);
-            /* debug Projection p1 */
-            ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = "red";
-            ctx.moveTo(box_A.center.x, box_A.center.y);
-            ctx.lineTo(box_A.center.x + axis.x * p1.min, box_A.center.y + axis.y * p1.min);
-            ctx.stroke();
-            ctx.closePath();
-            /* debug Projection p2 */
-            ctx.beginPath();
-            ctx.strokeStyle = "blue";
-            ctx.moveTo(box_B.center.x, box_B.center.y);
-            ctx.lineTo(box_B.center.x + axis.x * p2.min, box_B.center.y + axis.y * p2.min);
-            ctx.stroke();
-            ctx.closePath();
-            ctx.restore();
+            if (_Debug_) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.strokeStyle = "red";
+                ctx.moveTo(box_A.center.x, box_A.center.y);
+                ctx.lineTo(box_A.center.x + axis.x * p1.min, box_A.center.y + axis.y * p1.min);
+                ctx.stroke();
+                ctx.closePath();
+            }
+            if (_Debug_) {
+                ctx.beginPath();
+                ctx.strokeStyle = "blue";
+                ctx.moveTo(box_B.center.x, box_B.center.y);
+                ctx.lineTo(box_B.center.x + axis.x * p2.min, box_B.center.y + axis.y * p2.min);
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
             if (!p1.Overlap(p2)) {
                 return new MTV(false, new Vector2(), 0);
             }
@@ -169,32 +157,32 @@ export class ColliderFunc {
         else {
             return new MTV(false, new Vector2(), 0);
         }
-        //overlap = mvt_1.overlap;
-        //overlapN = mvt_1.axis;
         /* affiche un rectangle */
-        ctx.save();
-        ctx.strokeStyle = "yellow";
-        ctx.translate(box_A.center.x, box_A.center.y);
-        ctx.rotate(box_A.rotation * Math.PI / 180);
-        const halfWidth = box_A.size.x / 2;
-        const halfHeight = box_A.size.y / 2;
-        ctx.beginPath();
-        ctx.moveTo(-halfWidth, -halfHeight);
-        ctx.lineTo(halfWidth, -halfHeight);
-        ctx.lineTo(halfWidth, halfHeight);
-        ctx.lineTo(-halfWidth, halfHeight);
-        ctx.lineTo(-halfWidth, -halfHeight);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore();
-        /* MTV => Minimum Translation Vector */
-        /* affiche le MTV */
-        ctx.beginPath();
-        ctx.strokeStyle = "green";
-        ctx.moveTo(box_A.center.x, box_A.center.y);
-        ctx.lineTo(box_A.center.x + overlapN.x * overlap, box_A.center.y + overlapN.y * overlap);
-        ctx.stroke();
-        ctx.closePath();
+        if (_Debug_) {
+            ctx.save();
+            ctx.strokeStyle = "yellow";
+            ctx.translate(box_A.center.x, box_A.center.y);
+            ctx.rotate(box_A.rotation * Math.PI / 180);
+            const halfWidth = box_A.size.x / 2;
+            const halfHeight = box_A.size.y / 2;
+            ctx.beginPath();
+            ctx.moveTo(-halfWidth, -halfHeight);
+            ctx.lineTo(halfWidth, -halfHeight);
+            ctx.lineTo(halfWidth, halfHeight);
+            ctx.lineTo(-halfWidth, halfHeight);
+            ctx.lineTo(-halfWidth, -halfHeight);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+            /* MTV => Minimum Translation Vector */
+            /* affiche le MTV */
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.moveTo(box_A.center.x, box_A.center.y);
+            ctx.lineTo(box_A.center.x + overlapN.x * overlap, box_A.center.y + overlapN.y * overlap);
+            ctx.stroke();
+            ctx.closePath();
+        }
         let _MTV = new MTV(true, overlapN, overlap);
         //console.log(overlapN, overlap);
         return _MTV;
@@ -211,22 +199,24 @@ export class ColliderFunc {
         /* calculer une direction par rapport le centre de l'objet et le mvt */
         const correctionVector = new Vector2(mtv.axis.x * mtv.overlap * dt * (mass_B / (mass_A + mass_B)), mtv.axis.y * mtv.overlap * dt * (mass_A / (mass_A + mass_B)));
         /* affiche la direction de la correction */
-        ctx.save();
-        ctx.beginPath();
-        ctx.strokeStyle = "green";
-        ctx.moveTo(Phys_A.behavior.position.x, Phys_A.behavior.position.y);
-        ctx.lineTo(Phys_A.behavior.position.x
-            + correctionVector.x, Phys_A.behavior.position.y
-            + correctionVector.y);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore();
+        if (_Debug_) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.moveTo(Phys_A.behavior.position.x, Phys_A.behavior.position.y);
+            ctx.lineTo(Phys_A.behavior.position.x
+                + correctionVector.x, Phys_A.behavior.position.y
+                + correctionVector.y);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
         /* vérifier si l'objet A et devent l'objet B */
         let position_A = Phys_A.behavior.position;
         let position_B = Phys_B.behavior.position;
         let direction_A_B = position_B.Subtract(position_A).Normalized;
         let dotProduct = direction_A_B.Dot(mtv.axis);
-        console.log("dotProduct :", dotProduct);
+        //console.log("dotProduct :", dotProduct);
         if (dotProduct > 0) {
             Phys_B.behavior.position = Phys_B.behavior.position.Add(correctionVector.Multiply(Phys_B.restitution));
             Phys_A.behavior.position = Phys_A.behavior.position.Subtract(correctionVector.Multiply(Phys_A.restitution));
@@ -239,8 +229,8 @@ export class ColliderFunc {
             Phys_A.velocity = Phys_A.velocity.Add(correctionVector.Multiply(Phys_A.restitution));
             Phys_B.velocity = Phys_B.velocity.Subtract(correctionVector.Multiply(Phys_B.restitution));
         }
-        //Phys_A.behavior.OnCollisionEnter(Phys_B.behavior);
-        //Phys_B.behavior.OnCollisionEnter(Phys_A.behavior);
+        Phys_A.behavior.OnCollisionEnter(Phys_B.behavior);
+        Phys_B.behavior.OnCollisionEnter(Phys_A.behavior);
     }
     static CheckCollisionCircleCircle(circle_A, circle_B) {
         /* Check Collision entre deux cercles */
@@ -354,6 +344,13 @@ export class PhysicsCollider2d {
     restitution = 1; // 0 = no bounce, 1 = perfect bounce
     friction = 0.5; // 0 = no friction, 1 = high friction
     drag = 0.0001; // 0 = no drag, 1 = full drag
+    layerName = "default";
+    get LayerName() {
+        return this.layerName;
+    }
+    set LayerName(layerName) {
+        this.layerName = layerName.toLowerCase();
+    }
     DebugCollider(ctx) {
         if (this.behavior === null)
             return;
@@ -418,21 +415,29 @@ export default class Physics {
         const numColliders = this.colliders.length;
         for (let i = 0; i < numColliders - 1; i++) {
             const A_collider = this.colliders[i];
+            if (A_collider.behavior?.IsEnabled === false)
+                continue;
             A_collider.UpdateShap();
             for (let j = i + 1; j < numColliders; j++) {
                 const B_collider = this.colliders[j];
+                if (B_collider.behavior?.IsEnabled === false)
+                    continue;
+                if (!Layers.matrix[A_collider.LayerName][B_collider.LayerName])
+                    continue;
                 const MTV = PhysicsCollider2d.CheckCollision(ctx, A_collider, B_collider);
-                if (MTV.isColliding) {
-                    console.log(A_collider.behavior?.constructor.name, "collide with", B_collider.behavior?.constructor.name);
-                    PhysicsCollider2d.ResolveCollision(ctx, A_collider, B_collider, MTV, dt);
-                }
+                if (!MTV.isColliding)
+                    continue;
+                PhysicsCollider2d.ResolveCollision(ctx, A_collider, B_collider, MTV, dt);
             }
-            A_collider.DebugCollider(ctx);
+            if (_Debug_)
+                A_collider.DebugCollider(ctx);
         }
         /* rigidbody */
         for (let i = 0; i < numColliders - 1; i++) {
             const A_collider = this.colliders[i];
             if (A_collider.behavior === null)
+                continue;
+            if (A_collider.behavior.IsEnabled === false)
                 continue;
             A_collider.behavior.position = A_collider.behavior.position.Add(A_collider.velocity.Multiply(dt));
             A_collider.velocity = A_collider.velocity.Multiply(1 - A_collider.drag).Multiply(dt);

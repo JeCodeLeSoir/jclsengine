@@ -1,15 +1,6 @@
 import * as jcls from "jclsengine"
 import Missile from "./missile.js";
 
-export enum Input {
-  forward,
-  backward,
-  left,
-  right,
-  space,
-  shift
-}
-
 export default class Ship extends jcls.Behavior {
 
   static instance: Ship;
@@ -18,92 +9,68 @@ export default class Ship extends jcls.Behavior {
   protected IsPhysics: boolean = true;
   protected DisplayOrder: number = 2;
 
-  image: HTMLImageElement;
-  height: number = 0;
-  width: number = 0;
+  //image: HTMLImageElement;
+  height: number = 60;
+  width: number = 60;
+
+  private _spriteRenderer: jcls.SpriteRenderer | null = null;
+  private _sprite: jcls.Sprite | null = null;
 
   speed: number;
-
-  inputs: boolean[] = [];
 
   cooldown: number = 0;
   cooldownMax: number = 0.5;
 
   score: number = 0;
+  life: number = 3;
 
   constructor() {
     super();
     this.position.x = 25;
     this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
     this.speed = 150;
-    this.image = new Image();
 
+    //this.image = new Image();
     Ship.instance = this;
-
     console.log("Ship created");
 
     //this.Instantiate(new Missile(), this);
   }
 
   Load() {
-    this.image.src = './assets/player.png';
-    this.image.addEventListener('load', () => {
-      this.height = this.image.height;
-      this.width = this.image.width;
+    this._spriteRenderer = new jcls.SpriteRenderer();
+    this._sprite = new jcls.Sprite();
 
-      /*this.boundingBox = new jcls.Bounds(new
-        jcls.Vector2(this.position.x, this.position.y), new
-        jcls.Vector2(this.width, this.height));*/
-
+    this._sprite.LoadJson('./assets/json/player.json', () => {
+      this._spriteRenderer?.SetSprite(this._sprite!);
       this.shap = new jcls.Box(
-        this.width,
-        this.height
+        this.width, this.height
       );
+
       this.shap.center = this.position;
       this.shap.rotation = this.rotation;
 
       this.setIsLoaded(true);
       this.InitPhysics();
+      if (this.physicsCollider !== null)
+        this.physicsCollider.LayerName = "Player";
     })
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowUp' || e.key === 'z') {
-        this.inputs[Input.forward] = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 's') {
-        this.inputs[Input.backward] = true;
-      }
-      if (e.key === 'ArrowLeft' || e.key === 'q') {
-        this.inputs[Input.left] = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'd') {
-        this.inputs[Input.right] = true;
-      }
-      if (e.key === ' ') {
-        this.inputs[Input.space] = true;
-      }
-    });
+    /* this.image.src = './assets/player.png';
+     this.image.addEventListener('load', () => {
+       this.height = this.image.height;
+       this.width = this.image.width;
+ 
+       this.boundingBox = new jcls.Bounds(new
+         jcls.Vector2(this.position.x, this.position.y), new
+         jcls.Vector2(this.width, this.height));
+     })*/
 
-    window.addEventListener('keyup', (e) => {
-      if (e.key === 'ArrowUp' || e.key === 'z') {
-        this.inputs[Input.forward] = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 's') {
-        this.inputs[Input.backward] = false;
-      }
-      if (e.key === 'ArrowLeft' || e.key === 'q') {
-        this.inputs[Input.left] = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'd') {
-        this.inputs[Input.right] = false;
-      }
-      if (e.key === ' ') {
-        this.inputs[Input.space] = false;
-      }
-    });
+
   }
 
   Update(deltaTime: number) {
+
 
     //* set velocity to zero
     if (this.physicsCollider !== null)
@@ -112,55 +79,84 @@ export default class Ship extends jcls.Behavior {
     const h = jcls.Behavior_Instance.SCREEN_HEIGHT;
     const w = jcls.Behavior_Instance.SCREEN_WIDTH;
 
-    if (this.inputs[Input.forward]
+    if (jcls.Input.GetInput(jcls.EInput.forward)
       && this.position.y - this.height / 2 > 0
     ) {
       this.position.y -= this.speed * deltaTime;
     }
 
-    if (this.inputs[Input.backward]
+    if (jcls.Input.GetInput(jcls.EInput.backward)
       && this.position.y + this.height / 2 < h
     ) {
       this.position.y += this.speed * deltaTime;
     }
-    if (this.inputs[Input.left]
+    if (jcls.Input.GetInput(jcls.EInput.left)
       && this.position.x - this.width / 2 > 0
     ) {
       this.position.x -= this.speed * deltaTime;
     }
-    if (this.inputs[Input.right]
+    if (jcls.Input.GetInput(jcls.EInput.right)
       && this.position.x + this.width / 2 < w
     ) {
       this.position.x += this.speed * deltaTime;
     }
 
-    if (this.inputs[Input.space]) {
+    if (jcls.Input.GetInput(jcls.EInput.space)) {
       if (this.cooldown <= 0) {
         this.cooldown = this.cooldownMax;
-        this.Instantiate(
-          new Missile()).SetPosition(new jcls.Vector2(this.position.x + this.width / 2, this.position.y
-          ));
+
+        /*let m = this.Instantiate(
+          this.missile.Copy()
+        );
+        m.SetPosition(
+          new jcls.Vector2(this.position.x + this.width / 2, this.position.y)
+        );
+        m.IsEnabled = true;*/
+        //console.log(jcls.BehaviorPooling.Instance)
+
+        let m: jcls.Behavior = jcls.BehaviorPooling.Instance.Get("Missile");
+
+        if (m.physicsCollider !== null)
+          m.physicsCollider.velocity = new jcls.Vector2(0, 0);
+
+        m.SetPosition(
+          new jcls.Vector2(this.position.x + this.width / 2, this.position.y)
+        );
+
+        console.log(m);
+
+        //console.log(jcls.BehaviorPooling.Instance)
       }
     }
 
     this.cooldown -= deltaTime;
     this.score += 0.025 * deltaTime;
+
   }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    ctx.drawImage(this.image,
-      Math.round(this.position.x - this.width / 2),
-      Math.round(this.position.y - this.height / 2)
+    let x = Math.round(this.position.x - this.width / 2)
+    let y = Math.round(this.position.y - this.height / 2)
+
+    this._spriteRenderer?.Draw(ctx,
+      new jcls.Vector2(x, y),
+      this.rotation,
+      new jcls.Vector2(this.width, this.height),
     );
+
+    /*ctx.drawImage(this.image,
+
+    );*/
   }
 
   OnDestroy(): void {
-    window.location.reload();
+    //window.location.reload();
   }
 
   OnCollisionEnter(other: jcls.Behavior): void {
     if (other.GetTag() === "Asteroide") {
-      this.Destroy();
+      //this.Destroy();
+      this.life -= 1;
     }
   }
 }

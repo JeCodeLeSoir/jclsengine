@@ -1,5 +1,6 @@
 import Behavior from "./core/behavior.js";
 import Bounds from "./core/bounds.js";
+import Input from "./core/input.js";
 import Vector2 from "./core/vector2.js";
 import Physics, { PhysicsCollider2d } from "./physics/physics.js";
 
@@ -105,6 +106,10 @@ export default class JCLSEngine {
       /* call event ui */
       window.dispatchEvent(new Event("ui"));
 
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgb(31, 31, 31)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       Behavior_Instance.behaviors =
         Behavior_Instance.behaviors.filter((behavior) =>
           !behavior.GetIsDestroyed()
@@ -145,15 +150,11 @@ export default class JCLSEngine {
 
 
       Behavior_Instance.behaviors.forEach((behavior) => {
-        if (behavior.GetIsLoaded()) {
+        if (behavior.GetIsLoaded() && behavior.IsEnabled) {
           behavior.Update(deltaTime)
           behavior.ApplyTransform();
         }
       });
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgb(31, 31, 31)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       let draws = Behavior_Instance.behaviors.sort((a, b) =>
         a.GetDisplayOrder() - b.GetDisplayOrder()
@@ -173,7 +174,7 @@ export default class JCLSEngine {
 
 
       draws.forEach((behavior) =>
-        behavior.GetIsLoaded() ?
+        behavior.GetIsLoaded() && behavior.IsEnabled ?
           behavior.Draw(ctx, deltaTime) : {}
       );
 
@@ -183,6 +184,7 @@ export default class JCLSEngine {
 
 
       physics.Simulate(ctx, deltaTime);
+      Input.Instance.Update(deltaTime);
 
       /*
        end test physic

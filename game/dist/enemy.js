@@ -32,6 +32,8 @@ export default class Enemy extends jcls.Behavior {
             this.shap.rotation = this.rotation;
             this.setIsLoaded(true);
             this.InitPhysics();
+            if (this.physicsCollider !== null)
+                this.physicsCollider.LayerName = "Enemy";
         });
     }
     zigzag = false;

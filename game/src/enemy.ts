@@ -50,6 +50,8 @@ export default class Enemy extends jcls.Behavior {
 
       this.setIsLoaded(true);
       this.InitPhysics();
+      if (this.physicsCollider !== null)
+        this.physicsCollider.LayerName = "Enemy";
     })
 
   }
