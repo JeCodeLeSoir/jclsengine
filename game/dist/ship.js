@@ -1,4 +1,5 @@
 import * as jcls from "jclsengine";
+import HealPointBar from "./healPointBar.js";
 export default class Ship extends jcls.Behavior {
     static instance;
     Tag = "Player";
@@ -14,6 +15,9 @@ export default class Ship extends jcls.Behavior {
     cooldownMax = 0.5;
     score = 0;
     life = 3;
+    _clipExplosion = new jcls.Clip();
+    _clipInpact = new jcls.Clip();
+    _soundEffect = new jcls.SoundEffect();
     constructor() {
         super();
         this.position.x = 25;
@@ -28,6 +32,8 @@ export default class Ship extends jcls.Behavior {
         this._spriteRenderer = new jcls.SpriteRenderer();
         this._sprite = new jcls.Sprite();
         this._sprite.LoadJson('./assets/json/player.json', () => {
+            this._clipExplosion.Load('./assets/sounds/8bitexplosion.mp3');
+            this._clipInpact.Load('./assets/sounds/inpactRock2.ogg');
             this._spriteRenderer?.SetSprite(this._sprite);
             this.shap = new jcls.Box(this.width, this.height);
             this.shap.center = this.position;
@@ -48,6 +54,13 @@ export default class Ship extends jcls.Behavior {
          })*/
     }
     Update(deltaTime) {
+        if (this.cooldownDamage > 0)
+            this.cooldownDamage -= deltaTime;
+        if (this.life <= 0) {
+            this.Destroy();
+            this._soundEffect.PlayOneShot(this._clipExplosion);
+            //window.location.reload();
+        }
         //* set velocity to zero
         if (this.physicsCollider !== null)
             this.physicsCollider.velocity = new jcls.Vector2(0, 0);
@@ -102,10 +115,22 @@ export default class Ship extends jcls.Behavior {
     OnDestroy() {
         //window.location.reload();
     }
+    cooldownDamage = 0;
+    AsteroideLast = null;
     OnCollisionEnter(other) {
         if (other.GetTag() === "Asteroide") {
-            //this.Destroy();
-            this.life -= 1;
+            if (this.AsteroideLast !== other) {
+                console.log("ee");
+                this.AsteroideLast = other;
+                this.cooldownDamage = 0;
+            }
+            if (this.cooldownDamage <= 0) {
+                //this.Destroy();
+                this.life -= 1;
+                HealPointBar.SetHealPointBar(this.life);
+                this.cooldownDamage = 1;
+                this._soundEffect.PlayOneShot(this._clipInpact);
+            }
         }
     }
 }

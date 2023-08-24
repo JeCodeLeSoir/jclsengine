@@ -1,5 +1,6 @@
 import * as jcls from "jclsengine"
 import Missile from "./missile.js";
+import HealPointBar from "./healPointBar.js";
 
 export default class Ship extends jcls.Behavior {
 
@@ -24,6 +25,10 @@ export default class Ship extends jcls.Behavior {
   score: number = 0;
   life: number = 3;
 
+  _clipExplosion: jcls.Clip = new jcls.Clip();
+  _clipInpact: jcls.Clip = new jcls.Clip();
+  _soundEffect: jcls.SoundEffect = new jcls.SoundEffect();
+
   constructor() {
     super();
     this.position.x = 25;
@@ -42,6 +47,10 @@ export default class Ship extends jcls.Behavior {
     this._sprite = new jcls.Sprite();
 
     this._sprite.LoadJson('./assets/json/player.json', () => {
+
+      this._clipExplosion.Load('./assets/sounds/8bitexplosion.mp3');
+      this._clipInpact.Load('./assets/sounds/inpactRock2.ogg');
+
       this._spriteRenderer?.SetSprite(this._sprite!);
       this.shap = new jcls.Box(
         this.width, this.height
@@ -70,7 +79,14 @@ export default class Ship extends jcls.Behavior {
   }
 
   Update(deltaTime: number) {
+    if (this.cooldownDamage > 0)
+      this.cooldownDamage -= deltaTime;
 
+    if (this.life <= 0) {
+      this.Destroy();
+      this._soundEffect.PlayOneShot(this._clipExplosion);
+      //window.location.reload();
+    }
 
     //* set velocity to zero
     if (this.physicsCollider !== null)
@@ -153,10 +169,25 @@ export default class Ship extends jcls.Behavior {
     //window.location.reload();
   }
 
+  cooldownDamage: number = 0;
+  AsteroideLast: jcls.Behavior | null = null;
+
   OnCollisionEnter(other: jcls.Behavior): void {
     if (other.GetTag() === "Asteroide") {
-      //this.Destroy();
-      this.life -= 1;
+
+      if (this.AsteroideLast !== other) {
+        console.log("ee");
+        this.AsteroideLast = other;
+        this.cooldownDamage = 0;
+      }
+
+      if (this.cooldownDamage <= 0) {
+        //this.Destroy();
+        this.life -= 1;
+        HealPointBar.SetHealPointBar(this.life);
+        this.cooldownDamage = 1;
+        this._soundEffect.PlayOneShot(this._clipInpact);
+      }
     }
   }
 }

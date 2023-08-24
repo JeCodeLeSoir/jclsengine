@@ -415,11 +415,15 @@ export default class Physics {
         const numColliders = this.colliders.length;
         for (let i = 0; i < numColliders - 1; i++) {
             const A_collider = this.colliders[i];
+            if (A_collider.behavior === null)
+                continue;
             if (A_collider.behavior?.IsEnabled === false)
                 continue;
             A_collider.UpdateShap();
             for (let j = i + 1; j < numColliders; j++) {
                 const B_collider = this.colliders[j];
+                if (B_collider.behavior === null)
+                    continue;
                 if (B_collider.behavior?.IsEnabled === false)
                     continue;
                 if (!Layers.matrix[A_collider.LayerName][B_collider.LayerName])

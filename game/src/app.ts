@@ -6,6 +6,7 @@ import Ship from "./ship.js";
 import StarBackground from "./starBackground.js";
 import StartText from "./startText.js";
 import Missile from "./missile.js";
+import HealPointBar from "./healPointBar.js";
 
 let RunParent: HTMLElement | null =
   document.getElementById("Run");
@@ -30,6 +31,7 @@ btnRun?.addEventListener("click", () => {
   const engine = new jcls.JCLSEngine(() => [
     new StartText(),
     //new Enemy(),
+    new HealPointBar(),
     new Ship(),
     new AsteroideSpawner(),
     new StarBackground()

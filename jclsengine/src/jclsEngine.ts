@@ -13,7 +13,6 @@ export class Behavior_Instance {
 
 const __Debug__ = false;
 
-
 export default class JCLSEngine {
 
   On(event: string, callback: () => void) {
@@ -42,6 +41,7 @@ export default class JCLSEngine {
 
     canvas.width = 800;
     canvas.height = canvas.width / 2;
+    let ratio = canvas.width / canvas.height;
 
     Behavior_Instance.SCREEN_WIDTH = canvas.width;
     Behavior_Instance.SCREEN_HEIGHT = canvas.height;
@@ -52,6 +52,22 @@ export default class JCLSEngine {
     _behaviors.forEach((behavior) => Behavior_Instance.behaviors.push(behavior));
 
     Behavior_Instance.behaviors.forEach((behavior) => behavior.Init(ctx));
+
+
+    window.addEventListener("resize", () => {
+      console.log("resize");
+
+      /* garder le meme ratio */
+
+      if (window.innerWidth / window.innerHeight > ratio) {
+        canvas.style.width = window.innerHeight * ratio + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+      }
+      else {
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerWidth / ratio + 'px';
+      }
+    });
 
 
     /*

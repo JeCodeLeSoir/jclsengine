@@ -11,6 +11,9 @@ export default class Asteroide extends jcls.Behavior {
   height: number = 0;
   width: number = 0;
 
+  _clipInpact: jcls.Clip = new jcls.Clip();
+  _soundEffect: jcls.SoundEffect = new jcls.SoundEffect();
+
   constructor() {
     super();
     this.image = new Image();
@@ -19,6 +22,8 @@ export default class Asteroide extends jcls.Behavior {
   Load() {
     this.image.src = './assets/asteroide.png';
     this.image.addEventListener('load', () => {
+
+      this._clipInpact.Load('./assets/sounds/inpactRock2.ogg');
 
       this.height = this.image.height;
       this.width = this.image.width;
@@ -69,5 +74,10 @@ export default class Asteroide extends jcls.Behavior {
     if (other.GetTag() === "Player_Missile") {
       this.Destroy();
     }
+
+    if (other.GetTag() === this.Tag) {
+      this._soundEffect.PlayOneShot(this._clipInpact);
+    }
+
   }
 }
