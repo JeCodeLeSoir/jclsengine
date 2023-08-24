@@ -64,6 +64,25 @@ export default class SoundEffect {
     }
   }
 
+  index: number = 0;
+  PlayList(clips: Clip[], isLoop: boolean) {
+    if (clips.length > 0) {
+      this.index = 0;
+      this.Play(clips[this.index]);
+      clips[this.index].GetAudio()?.addEventListener('ended', () => {
+
+        if (!isLoop && this.index == clips.length - 1)
+          return;
+
+        this.index++;
+
+        if (this.index < clips.length) {
+          this.Play(clips[this.index]);
+        }
+      });
+    }
+  }
+
   Stop() {
 
   }

@@ -18,12 +18,15 @@ btnRun?.addEventListener("click", () => {
 
   RunParent?.classList.add("hidden");
 
-  let _clip = new jcls.Clip();
-  _clip.Load('./assets/musics/gamemusic.mp3');
-  let _soundEffect = new jcls.SoundEffect()
+  let _clip0 = new jcls.Clip();
+  _clip0.Load('./assets/musics/gamemusic.mp3');
 
-  _soundEffect.SetLoop(true);
-  _soundEffect.Play(_clip);
+  let _clip1 = new jcls.Clip();
+  _clip0.Load('./assets/musics/gamemusic.mp3');
+
+  let _soundEffect = new jcls.SoundEffect()
+  //_soundEffect.SetLoop(true);
+  _soundEffect.PlayList([_clip0, _clip1], true);
 
   jcls.BehaviorPooling.Instance.Create("Missile", () => new Missile(), 10);
   console.log(jcls.BehaviorPooling.Instance)

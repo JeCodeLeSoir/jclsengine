@@ -66,6 +66,8 @@ export default class HealPointBar extends jcls.Behavior {
     ctx.font = "12px Arial";
 
     ctx.fillText(this._text, this.position.x, this.position.y);
+
+
   }
 
 }

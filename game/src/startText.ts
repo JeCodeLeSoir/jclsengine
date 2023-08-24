@@ -30,7 +30,6 @@ export default class StartText extends jcls.Behavior {
     }
   }
 
-
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
     ctx.fillStyle = "white";
     ctx.font = "35px Arial";
