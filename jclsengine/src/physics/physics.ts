@@ -2,8 +2,9 @@ import Vector2 from "../core/vector2.js";
 import Bounds from "../core/bounds.js";
 import Behavior from "../core/behavior.js";
 import { Layers } from "./layers.js";
+import { Behavior_Instance } from "../jclsEngine.js";
 
-const _Debug_ = false;
+const _Debug_ = true;
 
 /* List of Physics  
   Box,
@@ -116,8 +117,7 @@ export class ColliderFunc {
     let overlapN: Vector2 = new Vector2();
 
     for (let i = 0; i < corners_array.length; i++) {
-      let _corner = corners_array[i];
-
+      const _corner = corners_array[i];
       let nextCorner: Vector2 | null = null;
 
       if (i + 1 === corners_array.length) {
@@ -129,32 +129,27 @@ export class ColliderFunc {
 
       const edge = nextCorner.Subtract(_corner);
       const normal = new Vector2(edge.y, -edge.x);
-
-      let axis = normal.Normalized;
-
-      let p1: Projection = box_A.project(axis);
-      let p2: Projection = box_B.project(axis);
+      const axis = normal.Normalized;
+      const p1: Projection = box_A.project(axis);
+      const p2: Projection = box_B.project(axis);
 
 
       if (_Debug_) {
-        ctx.save();
+        /*ctx.save();
         ctx.beginPath();
         ctx.strokeStyle = "red";
         ctx.moveTo(box_A.center.x, box_A.center.y);
         ctx.lineTo(box_A.center.x + axis.x * p1.min, box_A.center.y + axis.y * p1.min);
         ctx.stroke();
-        ctx.closePath();
-      }
+        ctx.closePath();*/
 
-
-      if (_Debug_) {
-        ctx.beginPath();
+        /*ctx.beginPath();
         ctx.strokeStyle = "blue";
         ctx.moveTo(box_B.center.x, box_B.center.y);
         ctx.lineTo(box_B.center.x + axis.x * p2.min, box_B.center.y + axis.y * p2.min);
         ctx.stroke();
         ctx.closePath();
-        ctx.restore();
+        ctx.restore();*/
       }
 
       if (!p1.Overlap(p2)) {
@@ -223,9 +218,9 @@ export class ColliderFunc {
     /* affiche un rectangle */
     if (_Debug_) {
       ctx.save();
-      ctx.strokeStyle = "yellow";
+      ctx.strokeStyle = "#00e5ff"
       ctx.translate(box_A.center.x, box_A.center.y);
-      ctx.rotate(box_A.rotation * Math.PI / 180);
+      ctx.rotate((box_A.rotation - 90) * Math.PI / 180);
 
       const halfWidth = box_A.size.x / 2;
       const halfHeight = box_A.size.y / 2;
@@ -238,21 +233,7 @@ export class ColliderFunc {
       ctx.lineTo(-halfWidth, -halfHeight);
       ctx.stroke();
       ctx.closePath();
-
       ctx.restore();
-
-      /* MTV => Minimum Translation Vector */
-      /* affiche le MTV */
-      ctx.beginPath();
-      ctx.strokeStyle = "green";
-      ctx.moveTo(
-        box_A.center.x
-        , box_A.center.y
-      );
-      ctx.lineTo(box_A.center.x + overlapN.x * overlap, box_A.center.y + overlapN.y * overlap);
-      ctx.stroke();
-      ctx.closePath();
-
     }
 
     let _MTV = new MTV(true, overlapN, overlap);
@@ -276,18 +257,8 @@ export class ColliderFunc {
     if (Phys_A.behavior === null || Phys_B.behavior === null) return;
     if (Phys_A.shap === null || Phys_B.shap === null) return;
 
-    const mass_A = Phys_A.mass;
-    const mass_B = Phys_B.mass;
-
-    /* calculer une direction par rapport le centre de l'objet et le mvt */
-
-    const correctionVector = new Vector2(
-      mtv.axis.x * mtv.overlap * dt * (mass_B / (mass_A + mass_B)),
-      mtv.axis.y * mtv.overlap * dt * (mass_A / (mass_A + mass_B))
-    );
-
     /* affiche la direction de la correction */
-    if (_Debug_) {
+    /*if (_Debug_) {
       ctx.save();
       ctx.beginPath();
       ctx.strokeStyle = "green";
@@ -303,55 +274,89 @@ export class ColliderFunc {
       ctx.stroke();
       ctx.closePath();
       ctx.restore();
-    }
+    }*/
 
     /* vérifier si l'objet A et devent l'objet B */
-    let position_A = Phys_A.behavior.position;
-    let position_B = Phys_B.behavior.position;
+    const position_A = Phys_A.behavior.position;
+    const position_B = Phys_B.behavior.position;
 
-    let direction_A_B = position_B.Subtract(position_A).Normalized;
-    let dotProduct = direction_A_B.Dot(mtv.axis);
+    const direction_A_B = position_B.Subtract(position_A).Normalized;
+    const dot = direction_A_B.Dot(mtv.axis);
+
+    /* calculer une direction par rapport le centre de l'objet et le mvt */
+    const correctionVector = new Vector2(
+      (mtv.axis.x) * (mtv.overlap) * dot,
+      (mtv.axis.y) * (mtv.overlap) * dot
+    );
+
+    //correctionVector.MultiplyNR(1.1);
+
+    /* draw text */
+    if (_Debug_) {
+      ctx.save();
+      ctx.font = "20px Arial";
+      ctx.fillStyle = "green";
+      ctx.fillText(
+        "Vector : " + correctionVector.ToString(),
+        Phys_A.behavior.position.x + 10,
+        Phys_A.behavior.position.y + 10
+      );
+      ctx.fillText(
+        "Dot : " + dot,
+        Phys_A.behavior.position.x + 10,
+        Phys_A.behavior.position.y + 30
+      );
+      ctx.fillText(
+        "Mass : " + Phys_A.mass,
+        Phys_A.behavior.position.x + 10,
+        Phys_A.behavior.position.y + 50
+      );
+      ctx.restore();
+
+      /* affiche la direction de la correction */
+      ctx.beginPath();
+      ctx.strokeStyle = "green";
+      ctx.moveTo(
+        Phys_A.behavior.position.x,
+        Phys_A.behavior.position.y
+      );
+      ctx.lineTo(
+        Phys_A.behavior.position.x + correctionVector.x,
+        Phys_A.behavior.position.y + correctionVector.y
+      );
+      ctx.stroke();
+      ctx.closePath();
+    }
 
     //console.log("dotProduct :", dotProduct);
 
-    if (dotProduct > 0) {
 
-      Phys_B.behavior.position = Phys_B.behavior.position.Add(
-        correctionVector.Multiply(Phys_B.restitution)
-      );
+    if (mtv.overlap <= 0) return;
 
-      Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
-        correctionVector.Multiply(Phys_A.restitution)
-      );
+    const mass_A = Phys_A.mass;
+    const mass_B = Phys_B.mass;
 
-      Phys_B.velocity = Phys_B.velocity.Add(
-        correctionVector.Multiply(Phys_B.restitution)
-      );
+    const restitution_b = mass_A / (mass_A + mass_B);
+    const restitution_a = mass_B / (mass_A + mass_B);
 
-      Phys_A.velocity = Phys_A.velocity.Subtract(
-        correctionVector.Multiply(Phys_A.restitution)
-      );
-    }
-    else {
-      Phys_A.behavior.position = Phys_A.behavior.position.Add(
-        correctionVector.Multiply(Phys_A.restitution)
-      );
-      Phys_B.behavior.position = Phys_B.behavior.position.Subtract(
-        correctionVector.Multiply(Phys_B.restitution)
-      );
+    Phys_B.behavior.position = Phys_B.behavior.position.Add(
+      correctionVector.Multiply(restitution_b)
+    );
 
-      Phys_A.velocity = Phys_A.velocity.Add(
-        correctionVector.Multiply(Phys_A.restitution)
-      );
+    Phys_A.behavior.position = Phys_A.behavior.position.Subtract(
+      correctionVector.Multiply(restitution_a)
+    );
 
-      Phys_B.velocity = Phys_B.velocity.Subtract(
-        correctionVector.Multiply(Phys_B.restitution)
-      );
-    }
+    Phys_B.velocity = Phys_B.velocity.Add(
+      correctionVector.Multiply(restitution_b)
+    );
+
+    Phys_A.velocity = Phys_A.velocity.Subtract(
+      correctionVector.Multiply(restitution_a)
+    );
 
     Phys_A.behavior.OnCollisionEnter(Phys_B.behavior);
     Phys_B.behavior.OnCollisionEnter(Phys_A.behavior);
-
   }
 
   static CheckCollisionCircleCircle(circle_A: Circle, circle_B: Circle): boolean {
@@ -412,7 +417,36 @@ export class Box extends ColliderShap {
     this.Calculate();
   }
 
+  Intersects(point: Vector2): boolean {
+    const cosAngle = Math.cos(this.angle * Math.PI / 180);
+    const sinAngle = Math.sin(this.angle * Math.PI / 180);
+
+    const halfWidth = this.size.x / 2;
+    const halfHeight = this.size.y / 2;
+
+    const corners = [
+      { x: -halfWidth, y: -halfHeight },
+      { x: halfWidth, y: -halfHeight },
+      { x: halfWidth, y: halfHeight },
+      { x: -halfWidth, y: halfHeight }
+    ];
+
+    for (const corner of corners) {
+      const x = corner.x * cosAngle - corner.y * sinAngle + this.center.x;
+      const y = corner.x * sinAngle + corner.y * cosAngle + this.center.y;
+
+      if (point.x > x - 1 && point.x < x + 1
+        && point.y > y - 1 && point.y < y + 1) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
   Calculate() {
+    this.angle = this.rotation;
     this.corners = this.CalculateTransformedCorners();
   }
 
@@ -495,9 +529,15 @@ export class PhysicsCollider2d {
   public mass: number = 1; // 0 = infinite mass
   public restitution: number = 1; // 0 = no bounce, 1 = perfect bounce
   public friction: number = 0.5; // 0 = no friction, 1 = high friction
-  public drag: number = 0.0001; // 0 = no drag, 1 = full drag
+  public drag: number = 0; // 0 = no drag, 1 = full drag //0.00001
 
   private layerName: string = "default";
+
+  public _id: number = 0;
+
+  constructor() {
+    this._id = Physics.Instance.colliders.length;
+  }
 
   get LayerName(): string {
     return this.layerName;
@@ -596,51 +636,80 @@ export default class Physics {
 
   Simulate(ctx, dt: number) {
     this.InternalStep(ctx, dt);
+
   }
 
   private InternalStep(ctx, dt) {
 
     const numColliders = this.colliders.length;
 
-    for (let i = 0; i < numColliders - 1; i++) {
+    if (_Debug_) {
+      for (let i = 0; i < numColliders; i++) {
+        const A_collider = this.colliders[i];
+
+        if (A_collider.behavior === null) continue;
+        if (A_collider.behavior.GetIsLoaded() === false) continue;
+        if (A_collider.behavior.IsEnabled === false) continue;
+
+        A_collider.DebugCollider(ctx);
+      }
+    }
+
+    /* exemple CollidersSleep[B_collider] = A_collider; */
+    //let CollidersSleep: any[]
+    // = [];
+
+    for (let i = 0; i < numColliders; i++) {
       const A_collider = this.colliders[i];
 
       if (A_collider.behavior === null) continue;
-      if (A_collider.behavior?.IsEnabled === false) continue;
+      if (A_collider.behavior.GetIsLoaded() === false) continue;
+      if (A_collider.behavior.IsEnabled === false) continue;
 
       A_collider.UpdateShap();
 
       for (let j = i + 1; j < numColliders; j++) {
         const B_collider = this.colliders[j];
 
+        //if (CollidersSleep[A_collider._id] === B_collider._id) continue;
+
         if (B_collider.behavior === null) continue;
-        if (B_collider.behavior?.IsEnabled === false) continue;
+        if (B_collider.behavior.GetIsLoaded() === false) continue;
+        if (B_collider.behavior.IsEnabled === false) continue;
+
         if (!Layers.matrix[A_collider.LayerName][B_collider.LayerName]) continue;
 
         const MTV = PhysicsCollider2d.CheckCollision(ctx, A_collider, B_collider);
-        if (!MTV.isColliding) continue;
+
+        //if (!MTV.isColliding) continue;
 
         PhysicsCollider2d.ResolveCollision(ctx, A_collider, B_collider, MTV, dt);
+        //CollidersSleep[B_collider._id] = A_collider._id;
       }
 
-      if (_Debug_)
-        A_collider.DebugCollider(ctx);
     }
 
     /* rigidbody */
-    for (let i = 0; i < numColliders - 1; i++) {
+    for (let i = 0; i < numColliders; i++) {
       const A_collider = this.colliders[i];
 
       if (A_collider.behavior === null) continue;
+      if (A_collider.behavior.GetIsLoaded() === false) continue;
       if (A_collider.behavior.IsEnabled === false) continue;
 
-      A_collider.behavior.position = A_collider.behavior.position.Add(
-        A_collider.velocity.Multiply(dt)
-      );
+      A_collider.behavior.position =
+        A_collider.behavior.position.Add(
+          A_collider.velocity
+        );
 
-      A_collider.velocity = A_collider.velocity.Multiply(1 - A_collider.drag).Multiply(dt);
+      A_collider.behavior.position = A_collider.behavior.position.Round();
 
-      if (A_collider.velocity.Magnitude < 0.01) {
+      if (A_collider.drag > 0)
+        A_collider.velocity = A_collider.velocity
+          .Multiply(-A_collider.drag)
+          .Multiply(dt);
+
+      if (A_collider.velocity.Magnitude < 0.000001) {
         A_collider.velocity = Vector2.zero;
       }
 
@@ -650,4 +719,41 @@ export default class Physics {
     }
 
   }
+
+  static RayCast(ctx,
+    origin: Vector2,
+    direction: Vector2,
+    distance: number, _Debug_ = false): Behavior | null {
+
+    for (let t = 0; t < distance; t += 0.00001) {
+      let point = origin.Add(direction.Multiply(t));
+
+      if (_Debug_) {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      for (let i = 0; i < Physics.Instance.colliders.length; i++) {
+        let collider = Physics.Instance.colliders[i];
+
+        if (collider.behavior === null) continue;
+        if (collider.behavior.GetIsLoaded() === false) continue;
+        if (collider.behavior.IsEnabled === false) continue;
+
+        if (collider.shap === null) continue;
+
+        if (collider.shap instanceof Box) {
+          let box = collider.shap as Box;
+
+          if (box.Intersects(point)) {
+            return collider.behavior;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
 }

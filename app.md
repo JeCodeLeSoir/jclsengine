@@ -10,7 +10,7 @@ npx tsc -b game/tsconfig.esm.json && cd ./game && python buidForGithubPage.py &&
 
 == Git ==
 
-git add -A && git commit -m "update" && git push
+git add -A && git commit -m "-- Update -- ❤️🚀👩‍🚀" && git push
 
 
 == itch.io ==

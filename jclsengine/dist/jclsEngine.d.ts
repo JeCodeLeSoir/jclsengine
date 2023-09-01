@@ -6,5 +6,6 @@ export declare class Behavior_Instance {
 }
 export default class JCLSEngine {
     On(event: string, callback: () => void): void;
+    ReSize(ratio: any, canvas: any): void;
     constructor(_callback: () => Behavior[]);
 }

@@ -1,7 +1,8 @@
 import * as jcls from "jclsengine";
 import AsteroideSpawner from "./asteroideSpawner.js";
+import Tags from "./tags.js";
 export default class Asteroide extends jcls.Behavior {
-    Tag = "Asteroide";
+    Tag = Tags.Asteroide;
     DisplayOrder = -1;
     IsPhysics = true;
     image;
@@ -27,7 +28,7 @@ export default class Asteroide extends jcls.Behavior {
             this.shap.rotation = this.rotation;
             this.physicsCollider = new jcls.PhysicsCollider2d();
             this.physicsCollider.mass = Math.PI * this.width * this.height;
-            console.log(this.physicsCollider.mass);
+            //console.log(this.physicsCollider.mass);
             this.setIsLoaded(true);
             this.InitPhysics();
             if (this.physicsCollider !== null)

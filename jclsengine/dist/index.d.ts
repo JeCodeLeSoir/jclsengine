@@ -8,4 +8,7 @@ import Physics, { Box, Circle, ColliderShap, PhysicsCollider2d, World } from "./
 import { Sprite, SpriteRenderer } from "./core/spriteRenderer.js";
 import BehaviorPooling from "./core/behaviorPooling.js";
 import Input, { EInput } from "./core/input.js";
-export { Behavior, Bounds, Vector2, RandomUtils, Clip, SoundEffect, JCLSEngine, Behavior_Instance, SpriteRenderer, Sprite, PhysicsCollider2d, World, Physics, Box, Circle, ColliderShap, BehaviorPooling, EInput, Input };
+import Voxel, { EventVoxel, PixelData, Group } from "./core/voxel.js";
+import Tags from "./core/tags.js";
+import MathF from "./utils/mathf.js";
+export { Behavior, Bounds, Vector2, RandomUtils, Clip, SoundEffect, JCLSEngine, Behavior_Instance, SpriteRenderer, Sprite, PhysicsCollider2d, World, Physics, Box, Circle, ColliderShap, BehaviorPooling, Voxel, PixelData, EventVoxel, Group, MathF, Tags, EInput, Input };

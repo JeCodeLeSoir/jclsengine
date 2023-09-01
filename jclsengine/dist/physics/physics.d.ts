@@ -48,6 +48,7 @@ export declare class Box extends ColliderShap {
     size: Vector2;
     angle: number;
     constructor(width: number, height: number);
+    Intersects(point: Vector2): boolean;
     Calculate(): void;
     CalculateTransformedCorners(): Vector2[];
     DebugCollider(ctx: any): void;
@@ -66,6 +67,8 @@ export declare class PhysicsCollider2d {
     friction: number;
     drag: number;
     private layerName;
+    _id: number;
+    constructor();
     get LayerName(): string;
     set LayerName(layerName: string);
     DebugCollider(ctx: any): void;
@@ -87,4 +90,5 @@ export default class Physics {
     RemoveCollider(collider: PhysicsCollider2d): void;
     Simulate(ctx: any, dt: number): void;
     private InternalStep;
+    static RayCast(ctx: any, origin: Vector2, direction: Vector2, distance: number, _Debug_?: boolean): Behavior | null;
 }

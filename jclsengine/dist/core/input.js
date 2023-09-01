@@ -33,6 +33,16 @@ export default class Input {
     static GetInput(input) {
         return this.Instance.inputs[input];
     }
+    static GetAxis(positive, negative) {
+        let axis = 0;
+        if (this.Instance.inputs[positive]) {
+            axis -= 1;
+        }
+        if (this.Instance.inputs[negative]) {
+            axis += 1;
+        }
+        return axis;
+    }
     constructor() {
         document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
         document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -61,11 +71,19 @@ export default class Input {
             this._mouse_delta = new Vector2(x, y);
         }
         {
-            this._mouse = new Vector2(e.clientX, e.clientY);
+            if (e.target instanceof HTMLCanvasElement) {
+                let target = e.target;
+                let rect = target.getBoundingClientRect();
+                let scaleX = target.width / rect.width; // relationship bitmap vs. element for x
+                let scaleY = target.height / rect.height; // relationship bitmap vs. element for y
+                let x = (e.clientX - rect.left) * scaleX;
+                let y = (e.clientY - rect.top) * scaleY;
+                this._mouse = new Vector2(x, y);
+            }
         }
     }
     _onContextMenu(e) {
-        e.preventDefault();
+        //e.preventDefault();
     }
     _onKeyUp(e) {
         if (e.key === 'ArrowUp' || e.key === 'z') {

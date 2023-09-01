@@ -2,5 +2,5 @@
 Player,✔,✘,✔,✔,✔,
 Enemy,✔,✔,✘,✔,✔,
 Missile_Enemy,✔,✔,✘,✘,✔,
-Missile_Player,✔,✔,✔,✔,✘,
+Missile_Player,✔,✘,✔,✔,✘,
 Asteroide,✔,✔,✔,✔,✔,

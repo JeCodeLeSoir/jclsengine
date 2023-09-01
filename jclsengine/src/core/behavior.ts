@@ -1,6 +1,7 @@
 import { Behavior_Instance } from "../jclsEngine.js";
 import Physics, { ColliderShap, PhysicsCollider2d } from "../physics/physics.js";
 import Bounds from "./bounds.js";
+import Tags from "./tags.js";
 import Vector2 from "./vector2.js";
 
 export default abstract class Behavior {
@@ -12,7 +13,7 @@ export default abstract class Behavior {
   private _collisionEnter: boolean = false;
   private _parent: Behavior | null = null;
 
-  protected Tag: string = "default";
+  protected Tag: Tags = "default";
   protected DisplayOrder: number = 0;
   protected IsPhysics: boolean = false;
 
@@ -23,12 +24,6 @@ export default abstract class Behavior {
 
   public physicsCollider: PhysicsCollider2d | null = null;
   public shap: ColliderShap | null = null;
-
-  public SetParent(parent: Behavior) {
-    this._parent = parent;
-    this.localPosition =
-      this.position.Subtract(this._parent.position);
-  }
 
   set IsEnabled(isEnabled: boolean) {
     this._IsEnabled = isEnabled;
@@ -42,9 +37,24 @@ export default abstract class Behavior {
     return this._parent;
   }
 
+  public get Forward(): Vector2 {
+    return new Vector2(
+      Math.cos(this.rotation * Math.PI / 180),
+      Math.sin(this.rotation * Math.PI / 180)
+    );
+  }
+
+  public get Right(): Vector2 {
+    return new Vector2(
+      Math.cos((this.rotation + 90) * Math.PI / 180),
+      Math.sin((this.rotation + 90) * Math.PI / 180)
+    );
+  }
+
   localPosition: Vector2 = new Vector2();
   position: Vector2 = new Vector2();
-  rotation: number = 90;
+  localRotation: number = 0;
+  rotation: number = 0;
   //collider: PhysicsCollider2d;
 
   SetPosition(position: Vector2) {
@@ -55,11 +65,11 @@ export default abstract class Behavior {
     return this.IsPhysics;
   }
 
-  GetTag(): string {
+  GetTag(): Tags {
     return this.Tag;
   }
 
-  SetTag(tag: string) {
+  SetTag(tag: Tags) {
     this.Tag = tag;
   }
 
@@ -74,8 +84,6 @@ export default abstract class Behavior {
   GetDisplayOrder() {
     return this.DisplayOrder;
   }
-
-
 
   Load() { }
 
@@ -97,7 +105,6 @@ export default abstract class Behavior {
       if (this.physicsCollider === null)
         this.physicsCollider = new PhysicsCollider2d();
 
-
       this.physicsCollider.behavior = this;
       this.physicsCollider.shap = this.shap;
 
@@ -106,9 +113,38 @@ export default abstract class Behavior {
     }
   }
 
+  public TransformToLocal(parent: Behavior, position: Vector2): Vector2 {
+    let localPosition = position.Subtract(parent.position);
+
+    let angle = parent.rotation * Math.PI / 180;
+
+    let localPositionAndRotation = localPosition.RotateAround(-angle, parent.position);
+
+    return localPositionAndRotation;
+  }
+
+  public TransformToGlobal(parent: Behavior, position: Vector2): Vector2 {
+
+    let globalPosition = position.Add(parent.position);
+
+    let angle = parent.rotation * Math.PI / 180;; //90 * Math.PI / 180;
+
+    let globalPositionAndRotation = globalPosition.RotateAround(angle, parent.position);
+
+    return globalPositionAndRotation;
+  }
+
+  public SetParent(parent: Behavior) {
+    this._parent = parent;
+    this.position.AddNR(parent.position);
+    this.localPosition = this.TransformToLocal(parent, this.position);
+  }
+
   ApplyTransform() {
     if (this._parent !== null) {
-      this.position = this.localPosition.Add(this._parent.position);
+
+      this.position = this.TransformToGlobal(this._parent, this.localPosition);
+      this.rotation = this._parent.rotation;
     }
   }
 
@@ -140,10 +176,13 @@ export default abstract class Behavior {
   }
 
   static Instantiate<T extends Behavior>(behavior: T,
-    behavior_parent: Behavior | null = null): T {
+    behavior_parent: Behavior | null = null,
+    notLoad: boolean = false
+  ): T {
     Behavior_Instance.behaviors.push(behavior);
 
-    behavior.Load();
+    if (!notLoad)
+      behavior.Load();
 
     if (behavior_parent !== null) {
       behavior.SetParent(behavior_parent);
@@ -153,8 +192,10 @@ export default abstract class Behavior {
   }
 
   Instantiate<T extends Behavior>(behavior: T,
-    behavior_parent: Behavior | null = null): T {
-    return Behavior.Instantiate(behavior, behavior_parent);
+    behavior_parent: Behavior | null = null,
+    notLoad: boolean = false
+  ): T {
+    return Behavior.Instantiate(behavior, behavior_parent, notLoad);
   }
 
   setIsLoaded(isLoaded: boolean) {

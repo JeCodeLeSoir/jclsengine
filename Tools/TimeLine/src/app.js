@@ -462,8 +462,8 @@ const UpdateScollTimeline = (timestamp) => {
 }
 requestAnimationFrame(UpdateScollTimeline);
 
-document.querySelector(".timeline").appendChild(cursor);
-document.addEventListener('wheel', (e) => {
+timeline.appendChild(cursor);
+timeline.addEventListener('wheel', (e) => {
 
   zoom -= 0.1 * e.deltaY;
   sizebyZoom = size * zoom;

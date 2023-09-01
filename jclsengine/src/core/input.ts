@@ -43,6 +43,20 @@ export default class Input {
     return this.Instance.inputs[input];
   }
 
+
+  static GetAxis(positive: EInput, negative: EInput): number {
+    let axis = 0;
+
+    if (this.Instance.inputs[positive]) {
+      axis -= 1;
+    }
+    if (this.Instance.inputs[negative]) {
+      axis += 1;
+    }
+
+    return axis;
+  }
+
   constructor() {
 
     document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
@@ -83,12 +97,24 @@ export default class Input {
     }
 
     {
-      this._mouse = new Vector2(e.clientX, e.clientY);
+      if (e.target instanceof HTMLCanvasElement) {
+        let target = e.target as HTMLCanvasElement;
+
+        let rect = target.getBoundingClientRect();
+
+        let scaleX = target.width / rect.width;   // relationship bitmap vs. element for x
+        let scaleY = target.height / rect.height;  // relationship bitmap vs. element for y
+
+        let x = (e.clientX - rect.left) * scaleX
+        let y = (e.clientY - rect.top) * scaleY
+
+        this._mouse = new Vector2(x, y);
+      }
     }
   }
 
   private _onContextMenu(e: MouseEvent): any {
-    e.preventDefault();
+    //e.preventDefault();
   }
 
   private _onKeyUp(e: KeyboardEvent): any {

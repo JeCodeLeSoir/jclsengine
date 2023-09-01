@@ -6,6 +6,7 @@ export declare class Sprite {
     image: HTMLImageElement;
     height: number;
     width: number;
+    rotation: number;
     imageSmoothingEnabled: boolean;
     rects: any[];
     get IsLoad(): boolean;
@@ -13,6 +14,7 @@ export declare class Sprite {
     private LoadImage;
     GetSpriteById(): {
         image: HTMLImageElement;
+        rotation: number;
         rect: any;
     };
 }
@@ -22,6 +24,6 @@ export declare class SpriteRenderer {
     SetSprite(sprite: Sprite): void;
     set isVisible(value: boolean);
     get isVisible(): boolean;
-    Draw(ctx: CanvasRenderingContext2D, position: Vector2, rotation: number, size: Vector2): void;
+    Draw(ctx: CanvasRenderingContext2D, position: Vector2, rotation: number, size: Vector2, scale?: Vector2): void;
     DrawImageRect(ctx: any, image: any, position: Vector2, size: Vector2, rect: any): void;
 }

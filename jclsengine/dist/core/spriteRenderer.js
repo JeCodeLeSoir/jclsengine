@@ -26,6 +26,7 @@ export class Sprite {
     image = new Image();
     height = 0;
     width = 0;
+    rotation = 90;
     imageSmoothingEnabled = false;
     rects = [];
     get IsLoad() {
@@ -54,6 +55,7 @@ export class Sprite {
     GetSpriteById() {
         return {
             image: this.image,
+            rotation: this.rotation,
             rect: this.rects[this.spriteid]
         };
     }
@@ -70,34 +72,53 @@ export class SpriteRenderer {
     get isVisible() {
         return this._isVisble;
     }
-    Draw(ctx, position, rotation, size) {
+    Draw(ctx, position, rotation, size, scale = new Vector2(1, 1)) {
         if (this._isVisble == false)
             return;
         const sprite = this._sprite.GetSpriteById();
         if (this._sprite.IsLoad == false)
             return;
-        position.x = Math.round(position.x);
-        position.y = Math.round(position.y);
-        //size.x = Math.round(size.x);
-        //size.y = Math.round(size.y);
-        ctx.save();
-        ctx.imageSmoothingEnabled = this._sprite.imageSmoothingEnabled;
-        /* pixel perfect */
-        ctx.translate(position.x, position.y);
-        let _rotation = 90;
-        let rad = _rotation * Math.PI / 180;
-        ctx.rotate(rad);
-        this.DrawImageRect(ctx, sprite.image, new Vector2(0, -(80)), size, {
-            position: new Vector2(sprite.rect.x, sprite.rect.y),
-            size: new Vector2(sprite.rect.w, sprite.rect.h)
-        });
-        ctx.restore();
+        //console.log(sprite.rect.w)
+        //console.log(sprite.rect.h)
+        /**/
+        let _x = position.x - (size.x / 2);
+        let _y = position.y - (size.y / 2);
+        let pivot_x = size.x / 2;
+        let pivot_y = size.y / 2;
+        ctx.save(); //1
+        {
+            ctx.translate(_x, _y);
+            ctx.save(); //2
+            {
+                ctx.translate(pivot_x, pivot_y);
+                ctx.rotate(rotation * Math.PI / 180);
+                ctx.translate(-pivot_x, -pivot_y);
+                ctx.save(); //3
+                {
+                    ctx.translate(pivot_x, pivot_y);
+                    ctx.rotate(sprite.rotation * Math.PI / 180);
+                    ctx.translate(-pivot_x, -pivot_y);
+                    ctx.save(); //4
+                    {
+                        ctx.translate(pivot_x, pivot_y);
+                        ctx.scale(scale.x, scale.y);
+                        ctx.translate(-pivot_x, -pivot_y);
+                        this.DrawImageRect(ctx, sprite.image, new Vector2(0, 0), size, {
+                            position: new Vector2(sprite.rect.x, sprite.rect.y),
+                            size: new Vector2(sprite.rect.w, sprite.rect.h)
+                        });
+                    }
+                    ctx.restore(); //4
+                }
+                ctx.restore(); //3
+            }
+            ctx.restore(); //2
+        }
+        ctx.restore(); //1
     }
     DrawImageRect(ctx, image, position, size, rect) {
+        ctx.save();
         ctx.drawImage(image, rect.position.x, rect.position.y, rect.size.x, rect.size.y, position.x, position.y, size.x, size.y);
-        /*ctx.drawImage(image, 250, 0,
-           250, 250,
-           0, 0,
-           800, 800);*/
+        ctx.restore();
     }
 }

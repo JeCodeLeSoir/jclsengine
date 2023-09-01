@@ -8,5 +8,4 @@ export default class Bounds {
     Update(position: Vector2): void;
     DebugDraw(ctx: CanvasRenderingContext2D): void;
     Intersects(bounds: Bounds | Vector2): boolean;
-    SqrDistance(point: Vector2): number;
 }

@@ -24,7 +24,7 @@ export class Clip {
 
 export default class SoundEffect {
 
-  volume: number = 0.1;
+  volume: number = 1;
   isLoop: boolean = false;
 
   SetLoop(isLoop: boolean) {
@@ -56,30 +56,59 @@ export default class SoundEffect {
   }
 
   Play(clip: Clip) {
+
     let audio = clip.GetAudio()
+
     if (audio) {
-      audio.volume = this.volume;
+      audio.volume = this.volume / 100;
       audio.loop = this.isLoop;
       audio.play();
+    }
+    else {
+      console.warn("audio is null")
+    }
+  }
+
+  PlayEnded(clip: Clip, callback_Ended: () => void) {
+    let audio = clip.GetAudio()
+    if (audio) {
+      audio.volume = this.volume / 100;
+      //audio.loop = this.isLoop;
+      audio.play();
+      audio.addEventListener('ended', () =>
+        callback_Ended()
+      );
+    }
+    else {
+      console.warn("audio is null")
     }
   }
 
   index: number = 0;
-  PlayList(clips: Clip[], isLoop: boolean) {
-    if (clips.length > 0) {
+  clips: Clip[] = [];
+  isLoopList: boolean = false;
+
+  PlayList(_clips: Clip[], _isLoop: boolean) {
+    this.clips = _clips;
+    this.isLoopList = _isLoop;
+
+    if (this.clips.length > 0) {
       this.index = 0;
-      this.Play(clips[this.index]);
-      clips[this.index].GetAudio()?.addEventListener('ended', () => {
-
-        if (!isLoop && this.index == clips.length - 1)
-          return;
-
+      const ended = () => {
+        console.log("ended")
+        if (this.isLoopList === false) return;
+        console.log("next")
         this.index++;
 
-        if (this.index < clips.length) {
-          this.Play(clips[this.index]);
+        console.log(this.index + "<" + this.clips.length)
+        console.log(this.clips[this.index])
+
+        if (this.index < this.clips.length) {
+          console.log("play next");
+          this.PlayEnded(this.clips[this.index], ended);
         }
-      });
+      }
+      this.PlayEnded(this.clips[this.index], ended);
     }
   }
 
@@ -93,7 +122,7 @@ export default class SoundEffect {
   PlayOneShot(clip: Clip) {
     let audio = clip.GetAudio()
     if (audio) {
-      audio.volume = this.volume;
+      audio.volume = this.volume / 100;
       audio.play();
     }
   }

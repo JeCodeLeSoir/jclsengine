@@ -1,11 +1,12 @@
 import * as jcls from "jclsengine"
 import Missile from "./missile.js";
+import Tags from "./tags.js";
 
 export default class Enemy extends jcls.Behavior {
 
   static instance: Enemy;
 
-  protected Tag: string = "Enemy";
+  protected Tag: jcls.Tags = Tags.Enemy;
   protected IsPhysics: boolean = true;
   protected DisplayOrder: number = 2;
 
@@ -84,7 +85,7 @@ export default class Enemy extends jcls.Behavior {
       this.cooldown = this.cooldownMax;
       let obj = this.Instantiate(new Missile());
       obj.SetPosition(new jcls.Vector2(this.position.x + this.width / 2, this.position.y));
-      obj.SetTag("Missile-Enemy");
+      obj.SetTag(Tags.Enemy_Missile);
       obj.setInverted(true);
     }
 
@@ -92,9 +93,6 @@ export default class Enemy extends jcls.Behavior {
   }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
-
-    /* inverse image */
-
     ctx.save();
     ctx.scale(-1, 1);
     ctx.drawImage(this.image,
@@ -109,12 +107,11 @@ export default class Enemy extends jcls.Behavior {
   }
 
   OnCollisionEnter(other: jcls.Behavior): void {
-
-    if (other.GetTag() === "player") {
-      this.Destroy();
-    }
-
-    if (other.GetTag() === "Missile") {
+    if (
+      other.GetTag() === Tags.Player
+      || other.GetTag() === Tags.Player_Laser
+      || other.GetTag() === Tags.Player_Missile
+    ) {
       this.Destroy();
     }
   }

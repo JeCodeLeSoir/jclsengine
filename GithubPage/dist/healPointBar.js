@@ -8,7 +8,9 @@ export default class HealPointBar extends jcls.Behavior {
     health = 3;
     maxHealth = 3;
     healDrawText = "❤️";
+    PowerDrawText = "🔋";
     healDrawTextHeight = 0;
+    powerDrawTextHeight = 0;
     _text = "";
     width = 0;
     OnDestroy() {
@@ -26,7 +28,7 @@ export default class HealPointBar extends jcls.Behavior {
         this.healDrawTextHeight = actualHeight;
     }
     Load() {
-        this.InitPhysics();
+        //this.InitPhysics();
         this.setIsLoaded(true);
     }
     Update(deltaTime) {

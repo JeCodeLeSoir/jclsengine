@@ -1,12 +1,13 @@
 import * as jcls from "jclsengine"
 import Missile from "./missile.js";
 import HealPointBar from "./healPointBar.js";
+import Tags from "./tags.js";
 
 export default class Ship extends jcls.Behavior {
 
   static instance: Ship;
 
-  protected Tag: string = "Player";
+  protected Tag: jcls.Tags = Tags.Player;
   protected IsPhysics: boolean = true;
   protected DisplayOrder: number = 2;
 
@@ -33,6 +34,7 @@ export default class Ship extends jcls.Behavior {
     super();
     this.position.x = 25;
     this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
+    this.rotation = 0;
     this.speed = 150;
 
     //this.image = new Image();
@@ -83,8 +85,8 @@ export default class Ship extends jcls.Behavior {
       this.cooldownDamage -= deltaTime;
 
     if (this.life <= 0) {
-      this.Destroy();
-      this._soundEffect.PlayOneShot(this._clipExplosion);
+      //this.Destroy();
+      //this._soundEffect.PlayOneShot(this._clipExplosion);
       //window.location.reload();
     }
 
@@ -95,7 +97,43 @@ export default class Ship extends jcls.Behavior {
     const h = jcls.Behavior_Instance.SCREEN_HEIGHT;
     const w = jcls.Behavior_Instance.SCREEN_WIDTH;
 
-    if (jcls.Input.GetInput(jcls.EInput.forward)
+    let mouseCoord = jcls.Input.GetMouseCoord();
+
+    let angle = Math.atan2(mouseCoord.y - this.position.y, mouseCoord.x - this.position.x);
+    this.rotation = (angle) * 180 / Math.PI;
+
+    // GetAxis(jcls.EInput.forward,
+    // jcls.EInput.backward,
+    // )
+    let vertical = -jcls.Input.GetAxis(jcls.EInput.forward, jcls.EInput.backward);
+    let horizontal = jcls.Input.GetAxis(jcls.EInput.left, jcls.EInput.right);
+
+    let a = this.Forward.Multiply(vertical);
+    let b = this.Right.Multiply(horizontal);
+
+    let direction = a.Add(b);
+
+    let normaldirection = jcls.Vector2.zero;
+
+    normaldirection.x = jcls.MathF.Clamp(direction.x, -1, 1);
+    normaldirection.y = jcls.MathF.Clamp(direction.y, -1, 1);
+
+    direction = direction.Normalized;
+    direction.MultiplyNR(this.speed * deltaTime);
+
+    this.position.AddNR(direction);
+
+    /*if (vertical !== 0) {
+      // add forward vector
+      //this.position.y += this.Forward.y * vertical * this.speed * deltaTime;
+    }
+
+    if (horizontal !== 0) {
+      //this.position.x += this.Forward.x * horizontal * this.speed * deltaTime;
+    }*/
+
+
+    /*if (jcls.Input.GetInput(jcls.EInput.forward)
       && this.position.y - this.height / 2 > 0
     ) {
       this.position.y -= this.speed * deltaTime;
@@ -115,22 +153,15 @@ export default class Ship extends jcls.Behavior {
       && this.position.x + this.width / 2 < w
     ) {
       this.position.x += this.speed * deltaTime;
-    }
+    }*/
 
     if (jcls.Input.GetInput(jcls.EInput.space)) {
       if (this.cooldown <= 0) {
         this.cooldown = this.cooldownMax;
 
-        /*let m = this.Instantiate(
-          this.missile.Copy()
-        );
-        m.SetPosition(
-          new jcls.Vector2(this.position.x + this.width / 2, this.position.y)
-        );
-        m.IsEnabled = true;*/
-        //console.log(jcls.BehaviorPooling.Instance)
-
         let m: jcls.Behavior = jcls.BehaviorPooling.Instance.Get("Missile");
+
+        m.SetTag(Tags.Player_Missile);
 
         if (m.physicsCollider !== null)
           m.physicsCollider.velocity = new jcls.Vector2(0, 0);
@@ -138,10 +169,6 @@ export default class Ship extends jcls.Behavior {
         m.SetPosition(
           new jcls.Vector2(this.position.x + this.width / 2, this.position.y)
         );
-
-        console.log(m);
-
-        //console.log(jcls.BehaviorPooling.Instance)
       }
     }
 
@@ -151,8 +178,34 @@ export default class Ship extends jcls.Behavior {
   }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    let x = Math.round(this.position.x - this.width / 2)
-    let y = Math.round(this.position.y - this.height / 2)
+    let mouseCoord = jcls.Input.GetMouseCoord();
+    /* debug mouse coord */
+    ctx.beginPath();
+    ctx.fillStyle = "red";
+    ctx.arc(mouseCoord.x, mouseCoord.y, 5, 0, 2 * Math.PI);
+    ctx.fill();
+
+
+    /* debug forward */
+    ctx.beginPath();
+    ctx.strokeStyle = "red";
+    ctx.moveTo(this.position.x, this.position.y);
+    ctx.lineTo(this.position.x + this.Forward.x * 50, this.position.y + this.Forward.y * 50);
+    ctx.stroke();
+
+    /* debug right */
+    ctx.beginPath();
+    ctx.strokeStyle = "blue";
+    ctx.moveTo(this.position.x, this.position.y);
+    ctx.lineTo(this.position.x + this.Right.x * 50, this.position.y + this.Right.y * 50);
+    ctx.stroke();
+
+
+
+
+
+    let x = Math.round(this.position.x)
+    let y = Math.round(this.position.y)
 
     this._spriteRenderer?.Draw(ctx,
       new jcls.Vector2(x, y),
@@ -173,10 +226,9 @@ export default class Ship extends jcls.Behavior {
   AsteroideLast: jcls.Behavior | null = null;
 
   OnCollisionEnter(other: jcls.Behavior): void {
-    if (other.GetTag() === "Asteroide") {
+    if (other.GetTag() === Tags.Asteroide) {
 
       if (this.AsteroideLast !== other) {
-        console.log("ee");
         this.AsteroideLast = other;
         this.cooldownDamage = 0;
       }

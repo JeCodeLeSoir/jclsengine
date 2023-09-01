@@ -20,6 +20,7 @@ export default class Input {
     static GetMouseDelta(): Vector2;
     static GetMouseWheel(): number;
     static GetInput(input: EInput): boolean;
+    static GetAxis(positive: EInput, negative: EInput): number;
     constructor();
     private _onMouseWheel;
     private _onPointerDown;

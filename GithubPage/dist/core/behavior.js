@@ -16,11 +16,6 @@ export default class Behavior {
    }*/
     physicsCollider = null;
     shap = null;
-    SetParent(parent) {
-        this._parent = parent;
-        this.localPosition =
-            this.position.Subtract(this._parent.position);
-    }
     set IsEnabled(isEnabled) {
         this._IsEnabled = isEnabled;
     }
@@ -30,9 +25,16 @@ export default class Behavior {
     GetParent() {
         return this._parent;
     }
+    get Forward() {
+        return new Vector2(Math.cos(this.rotation * Math.PI / 180), Math.sin(this.rotation * Math.PI / 180));
+    }
+    get Right() {
+        return new Vector2(Math.cos((this.rotation + 90) * Math.PI / 180), Math.sin((this.rotation + 90) * Math.PI / 180));
+    }
     localPosition = new Vector2();
     position = new Vector2();
-    rotation = 90;
+    localRotation = 0;
+    rotation = 0;
     //collider: PhysicsCollider2d;
     SetPosition(position) {
         this.position = position;
@@ -72,9 +74,28 @@ export default class Behavior {
             physics.AddCollider(this.physicsCollider);
         }
     }
+    TransformToLocal(parent, position) {
+        let localPosition = position.Subtract(parent.position);
+        let angle = parent.rotation * Math.PI / 180;
+        let localPositionAndRotation = localPosition.RotateAround(-angle, parent.position);
+        return localPositionAndRotation;
+    }
+    TransformToGlobal(parent, position) {
+        let globalPosition = position.Add(parent.position);
+        let angle = parent.rotation * Math.PI / 180;
+        ; //90 * Math.PI / 180;
+        let globalPositionAndRotation = globalPosition.RotateAround(angle, parent.position);
+        return globalPositionAndRotation;
+    }
+    SetParent(parent) {
+        this._parent = parent;
+        this.position.AddNR(parent.position);
+        this.localPosition = this.TransformToLocal(parent, this.position);
+    }
     ApplyTransform() {
         if (this._parent !== null) {
-            this.position = this.localPosition.Add(this._parent.position);
+            this.position = this.TransformToGlobal(this._parent, this.localPosition);
+            this.rotation = this._parent.rotation;
         }
     }
     Update(deltaTime) { }
@@ -95,16 +116,17 @@ export default class Behavior {
     GetIsLoaded() {
         return this._isLoaded;
     }
-    static Instantiate(behavior, behavior_parent = null) {
+    static Instantiate(behavior, behavior_parent = null, notLoad = false) {
         Behavior_Instance.behaviors.push(behavior);
-        behavior.Load();
+        if (!notLoad)
+            behavior.Load();
         if (behavior_parent !== null) {
             behavior.SetParent(behavior_parent);
         }
         return behavior;
     }
-    Instantiate(behavior, behavior_parent = null) {
-        return Behavior.Instantiate(behavior, behavior_parent);
+    Instantiate(behavior, behavior_parent = null, notLoad = false) {
+        return Behavior.Instantiate(behavior, behavior_parent, notLoad);
     }
     setIsLoaded(isLoaded) {
         this._isLoaded = isLoaded;

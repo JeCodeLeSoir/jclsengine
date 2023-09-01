@@ -51,9 +51,4 @@ export default class Bounds {
         }
         return false;
     }
-    SqrDistance(point) {
-        let dx = Math.max(this.min.x - point.x, 0, point.x - this.max.x);
-        let dy = Math.max(this.min.y - point.y, 0, point.y - this.max.y);
-        return dx * dx + dy * dy;
-    }
 }

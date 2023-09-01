@@ -1,4 +1,5 @@
 import { ColliderShap, PhysicsCollider2d } from "../physics/physics.js";
+import Tags from "./tags.js";
 import Vector2 from "./vector2.js";
 export default abstract class Behavior {
     private _IsEnabled;
@@ -6,22 +7,24 @@ export default abstract class Behavior {
     private _isDestroyed;
     private _collisionEnter;
     private _parent;
-    protected Tag: string;
+    protected Tag: Tags;
     protected DisplayOrder: number;
     protected IsPhysics: boolean;
     physicsCollider: PhysicsCollider2d | null;
     shap: ColliderShap | null;
-    SetParent(parent: Behavior): void;
     set IsEnabled(isEnabled: boolean);
     get IsEnabled(): boolean;
     GetParent(): Behavior | null;
+    get Forward(): Vector2;
+    get Right(): Vector2;
     localPosition: Vector2;
     position: Vector2;
+    localRotation: number;
     rotation: number;
     SetPosition(position: Vector2): void;
     GetIsPhysics(): boolean;
-    GetTag(): string;
-    SetTag(tag: string): void;
+    GetTag(): Tags;
+    SetTag(tag: Tags): void;
     SetCollisionEnter(Enter: boolean): void;
     GetCollisionEnter(): boolean;
     GetDisplayOrder(): number;
@@ -29,6 +32,9 @@ export default abstract class Behavior {
     Init(ctx: CanvasRenderingContext2D): void;
     Copy(): Behavior;
     InitPhysics(): void;
+    TransformToLocal(parent: Behavior, position: Vector2): Vector2;
+    TransformToGlobal(parent: Behavior, position: Vector2): Vector2;
+    SetParent(parent: Behavior): void;
     ApplyTransform(): void;
     Update(deltaTime: number): void;
     Draw(ctx: CanvasRenderingContext2D, deltaTime: number): void;
@@ -38,7 +44,7 @@ export default abstract class Behavior {
     OnCollisionExit(other: Behavior): void;
     GetIsDestroyed(): boolean;
     GetIsLoaded(): boolean;
-    static Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null): T;
-    Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null): T;
+    static Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null, notLoad?: boolean): T;
+    Instantiate<T extends Behavior>(behavior: T, behavior_parent?: Behavior | null, notLoad?: boolean): T;
     setIsLoaded(isLoaded: boolean): void;
 }

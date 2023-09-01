@@ -24,6 +24,22 @@ export default class JCLSEngine {
     }
   }
 
+  ReSize(ratio, canvas) {
+    /* garder le meme ratio */
+
+    if (window.innerWidth / window.innerHeight > ratio) {
+      canvas.style.width = window.innerHeight * ratio + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+    }
+    else {
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerWidth / ratio + 'px';
+    }
+
+    Behavior_Instance.SCREEN_WIDTH = canvas.width;
+    Behavior_Instance.SCREEN_HEIGHT = canvas.height;
+  }
+
   constructor(_callback: () => Behavior[]) {
     new Behavior_Instance();
 
@@ -38,10 +54,14 @@ export default class JCLSEngine {
     if (ctx === null) {
       throw new Error("Canvas context not found");
     }
+    ctx.imageSmoothingEnabled = false;
 
     canvas.width = 800;
     canvas.height = canvas.width / 2;
     let ratio = canvas.width / canvas.height;
+
+    this.ReSize(ratio, canvas)
+    window.addEventListener("resize", () => this.ReSize(ratio, canvas));
 
     Behavior_Instance.SCREEN_WIDTH = canvas.width;
     Behavior_Instance.SCREEN_HEIGHT = canvas.height;
@@ -52,23 +72,6 @@ export default class JCLSEngine {
     _behaviors.forEach((behavior) => Behavior_Instance.behaviors.push(behavior));
 
     Behavior_Instance.behaviors.forEach((behavior) => behavior.Init(ctx));
-
-
-    window.addEventListener("resize", () => {
-      console.log("resize");
-
-      /* garder le meme ratio */
-
-      if (window.innerWidth / window.innerHeight > ratio) {
-        canvas.style.width = window.innerHeight * ratio + 'px';
-        canvas.style.height = window.innerHeight + 'px';
-      }
-      else {
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerWidth / ratio + 'px';
-      }
-    });
-
 
     /*
            test physic
@@ -108,7 +111,7 @@ export default class JCLSEngine {
     });
 
     const Loop = (timestamp) => {
-
+      ctx.imageSmoothingEnabled = false;
       currentTime = timestamp;
       const deltaTime = (currentTime - previousTime) / 1000;
       previousTime = currentTime;

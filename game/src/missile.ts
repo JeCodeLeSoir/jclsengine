@@ -1,10 +1,11 @@
 import * as jcls from "jclsengine"
 import Ship from "./ship.js";
+import Tags from "./tags.js";
 
 export default class Missile extends jcls.Behavior {
 
   protected IsPhysics: boolean = true;
-  protected Tag: string = "Player_Missile";
+  protected Tag: jcls.Tags = Tags.Player_Missile;
 
   inverted: boolean = false;
 
@@ -83,13 +84,13 @@ export default class Missile extends jcls.Behavior {
   OnCollisionEnter(other: jcls.Behavior): void {
     console.log("OnCollisionEnter: " + other.GetTag());
 
-    if (other.GetTag() === "Asteroide") {
+    if (other.GetTag() === Tags.Asteroide) {
       Ship.instance.score += 100;
       jcls.BehaviorPooling.Instance.Free(this);
       this._soundEffect.PlayOneShot(this._clipExplosion);
     }
 
-    if (other.GetTag() === "Enemy") {
+    if (other.GetTag() === Tags.Enemy) {
       this._soundEffect.PlayOneShot(this._clipExplosion);
     }
 

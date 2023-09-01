@@ -1,26 +1,19 @@
+import MathF from "../utils/mathf.js";
 export default class Vector2 {
-    x = 0;
-    y = 0;
-    /**
-     * Creates a new Vector2 instance.
-     * @param x The x component of the vector.
-     * @param y The y component of the vector.
-     * @returns A new Vector2 instance.
-     * @example
-     * let vector = new Vector2(1, 1);
-     * console.log(vector.x); // 1
-     * console.log(vector.y); // 1
-     * console.log(vector); // Vector2 { x: 1, y: 1 }
-     * console.log(vector.toString()); // (1, 1)
-     * console.log(vector.magnitude); // 1.4142135623730951
-     * console.log(vector.normalized); // Vector2 { x: 0.7071067811865475, y: 0.7071067811865475 }
-     * console.log(vector.normalized.magnitude); // 1
-     * console.log(vector.normalized.toString()); // (0.7071067811865475, 0.7071067811865475)
-     * console.log(vector.normalized.normalized); // Vector2 { x: 0.7071067811865475, y: 0.7071067811865475 }
-     * console.log(vector.normalized.normalized.magnitude); // 1
-     * console.log(vector.normalized.normalized.toString()); // (0.7071067811865475, 0.7071067811865475)
-     * console.log(vector.normalized.normalized.normalized); // Vector2 { x: 0.7071067811865475, y: 0.7071067811865475 }
-     */
+    _x = 0;
+    _y = 0;
+    get x() {
+        return this._x;
+    }
+    set x(value) {
+        this._x = value;
+    }
+    get y() {
+        return this._y;
+    }
+    set y(value) {
+        this._y = value;
+    }
     constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
@@ -58,22 +51,17 @@ export default class Vector2 {
     static get min() {
         return new Vector2(Number.MIN_VALUE, Number.MIN_VALUE);
     }
-    get SqrtMagnitude() {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    }
-    get Magnitude() {
-        return Math.sqrt(this.SqrtMagnitude);
-    }
     get Normalized() {
-        return new Vector2(this.x / this.Magnitude, this.y / this.Magnitude);
+        return this.Divide(this.Length() || 1);
     }
     Set(x, y) {
         this.x = x;
         this.y = y;
         return this;
     }
-    Add(vector) {
-        let a = this.Clone();
+    /* Add */
+    static Add(_this, vector, clone = true) {
+        let a = clone ? _this.Clone() : _this;
         if (typeof vector === "number") {
             a.x += vector;
             a.y += vector;
@@ -83,8 +71,16 @@ export default class Vector2 {
         a.y += vector.y;
         return a;
     }
-    Subtract(vector) {
-        let a = this.Clone();
+    Add(vector) {
+        return Vector2.Add(this, vector);
+    }
+    AddNR(vector) {
+        Vector2.Add(this, vector, false);
+    }
+    /* Add end */
+    /* Subtract */
+    static Subtract(_this, vector, clone = true) {
+        let a = clone ? _this.Clone() : _this;
         if (typeof vector === "number") {
             a.x -= vector;
             a.y -= vector;
@@ -94,19 +90,35 @@ export default class Vector2 {
         a.y -= vector.y;
         return a;
     }
-    Multiply(vector) {
-        let a = this.Clone();
+    Subtract(vector) {
+        return Vector2.Subtract(this, vector);
+    }
+    SubtractNR(vector) {
+        Vector2.Subtract(this, vector, false);
+    }
+    /* Subtract end */
+    /* Multiply */
+    static Multiply(_this, vector, clone = true) {
+        let a = clone ? _this.Clone() : _this;
         if (typeof vector === "number") {
             a.x *= vector;
             a.y *= vector;
-            return this;
+            return a;
         }
         a.x *= vector.x;
         a.y *= vector.y;
         return a;
     }
-    Divide(vector) {
-        let a = this.Clone();
+    Multiply(vector) {
+        return Vector2.Multiply(this, vector);
+    }
+    MultiplyNR(vector) {
+        Vector2.Multiply(this, vector, false);
+    }
+    /* Multiply end */
+    /* Divide */
+    static Divide(_this, vector, clone = true) {
+        let a = clone ? _this.Clone() : _this;
         if (typeof vector === "number") {
             a.x /= vector;
             a.y /= vector;
@@ -116,30 +128,28 @@ export default class Vector2 {
         a.y /= vector.y;
         return a;
     }
-    Scale(vector) {
-        let a = this.Clone();
-        if (typeof vector === "number") {
-            a.x *= vector;
-            a.y *= vector;
-            return a;
-        }
-        a.x *= vector.x;
-        a.y *= vector.y;
-        return a;
+    Divide(vector) {
+        return Vector2.Divide(this, vector);
+    }
+    DivideNR(vector) {
+        Vector2.Divide(this, vector, false);
+    }
+    /* Divide end */
+    Dot(vector) {
+        return this.x * vector.x + this.y * vector.y;
     }
     Cross(vector) {
         return this.x * vector.y - this.y * vector.x;
     }
-    Distance(vector) {
-        return Math.sqrt(this.DistanceSquared(vector));
+    Angle() {
+        return Math.atan2(-this.y, -this.x) + Math.PI;
     }
-    DistanceSquared(vector) {
-        let dx = this.x - vector.x;
-        let dy = this.y - vector.y;
-        return dx * dx + dy * dy;
-    }
-    Angle(vector) {
-        return Math.atan2(this.Cross(vector), this.Dot(vector));
+    AngleBy(vector) {
+        const denominator = Math.sqrt(this.LengthSq() * vector.LengthSq());
+        if (denominator === 0)
+            return Math.PI / 2;
+        const theta = this.Dot(vector) / denominator;
+        return Math.acos(MathF.Clamp(theta, -1, 1));
     }
     Lerp(vector, t) {
         return new Vector2(this.x + (vector.x - this.x) * t, this.y + (vector.y - this.y) * t);
@@ -147,13 +157,48 @@ export default class Vector2 {
     Equals(vector) {
         return this.x === vector.x && this.y === vector.y;
     }
-    Dot(vector) {
-        return this.x * vector.x + this.y * vector.y;
-    }
     Clone() {
         return new Vector2(this.x, this.y);
     }
     ToString() {
         return `(${this.x}, ${this.y})`;
+    }
+    Length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+    LengthSq() {
+        return this.x * this.x + this.y * this.y;
+    }
+    Distance(vector) {
+        return Math.sqrt(this.SqrtDistance(vector));
+    }
+    get Magnitude() {
+        return Math.sqrt(this.SqrtMagnitude);
+    }
+    get SqrtMagnitude() {
+        return this.x * this.x + this.y * this.y; // 1 * 2 + 1 * 2 = 4
+    }
+    SqrtDistance(vector) {
+        const dx = this.x - vector.x, dy = this.y - vector.y;
+        return dx * dx + dy * dy;
+    }
+    RoundNR() {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+    }
+    Round() {
+        return new Vector2(Math.round(this.x), Math.round(this.y));
+    }
+    Rotate(angle) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        return new Vector2(this.x * cos - this.y * sin, this.x * sin + this.y * cos);
+    }
+    RotateAround(angle, pivot) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const x = this.x - pivot.x;
+        const y = this.y - pivot.y;
+        return new Vector2(x * cos - y * sin + pivot.x, x * sin + y * cos + pivot.y);
     }
 }

@@ -15,6 +15,19 @@ export default class JCLSEngine {
             window.addEventListener("ui", callback);
         }
     }
+    ReSize(ratio, canvas) {
+        /* garder le meme ratio */
+        if (window.innerWidth / window.innerHeight > ratio) {
+            canvas.style.width = window.innerHeight * ratio + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+        }
+        else {
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerWidth / ratio + 'px';
+        }
+        Behavior_Instance.SCREEN_WIDTH = canvas.width;
+        Behavior_Instance.SCREEN_HEIGHT = canvas.height;
+    }
     constructor(_callback) {
         new Behavior_Instance();
         const canvas = document.querySelector('canvas');
@@ -25,27 +38,18 @@ export default class JCLSEngine {
         if (ctx === null) {
             throw new Error("Canvas context not found");
         }
+        ctx.imageSmoothingEnabled = false;
         canvas.width = 800;
         canvas.height = canvas.width / 2;
         let ratio = canvas.width / canvas.height;
+        this.ReSize(ratio, canvas);
+        window.addEventListener("resize", () => this.ReSize(ratio, canvas));
         Behavior_Instance.SCREEN_WIDTH = canvas.width;
         Behavior_Instance.SCREEN_HEIGHT = canvas.height;
         console.log(Behavior_Instance.SCREEN_WIDTH + "X" + Behavior_Instance.SCREEN_HEIGHT);
         const _behaviors = _callback();
         _behaviors.forEach((behavior) => Behavior_Instance.behaviors.push(behavior));
         Behavior_Instance.behaviors.forEach((behavior) => behavior.Init(ctx));
-        window.addEventListener("resize", () => {
-            console.log("resize");
-            /* garder le meme ratio */
-            if (window.innerWidth / window.innerHeight > ratio) {
-                canvas.style.width = window.innerHeight * ratio + 'px';
-                canvas.style.height = window.innerHeight + 'px';
-            }
-            else {
-                canvas.style.width = window.innerWidth + 'px';
-                canvas.style.height = window.innerWidth / ratio + 'px';
-            }
-        });
         /*
                test physic
             */

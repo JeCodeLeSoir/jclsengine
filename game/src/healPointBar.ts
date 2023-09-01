@@ -14,7 +14,10 @@ export default class HealPointBar extends jcls.Behavior {
   maxHealth = 3;
 
   healDrawText = "❤️";
+  PowerDrawText = "🔋";
+
   healDrawTextHeight = 0;
+  powerDrawTextHeight = 0;
 
 
   _text = "";
@@ -42,7 +45,7 @@ export default class HealPointBar extends jcls.Behavior {
   }
 
   Load(): void {
-    this.InitPhysics();
+    //this.InitPhysics();
     this.setIsLoaded(true);
   }
 
