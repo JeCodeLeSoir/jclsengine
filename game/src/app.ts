@@ -19,6 +19,12 @@ let btnRun: HTMLElement | null
 
 btnRun?.addEventListener("click", () => {
 
+  setTimeout(() => {
+    document.body.addEventListener("click", () => {
+      jcls.Input.LockCursor(jcls.ECursorLock.locked);
+    })
+  }, 10);
+
   RunParent?.classList.add("hidden");
 
   let _clip0 = new jcls.Clip();

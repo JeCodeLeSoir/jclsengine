@@ -7,6 +7,11 @@ export declare enum EInput {
     space = 4,
     shift = 5
 }
+export declare enum ECursorLock {
+    none = 0,
+    locked = 1,
+    confine = 2
+}
 export default class Input {
     private static _instance;
     inputs: boolean[];
@@ -15,6 +20,8 @@ export default class Input {
     private _mouse_wheel;
     private _mouse_buttons;
     static get Instance(): Input;
+    private static _cursorLock;
+    static LockCursor(lock: ECursorLock): void;
     static GetButton(button: number): boolean;
     static GetMouseCoord(): Vector2;
     static GetMouseDelta(): Vector2;
@@ -25,6 +32,9 @@ export default class Input {
     private _onMouseWheel;
     private _onPointerDown;
     private _onPointerUp;
+    test_d: number;
+    private _mouse_last;
+    private _onMouseMove;
     private _onPointerMove;
     private _onContextMenu;
     private _onKeyUp;

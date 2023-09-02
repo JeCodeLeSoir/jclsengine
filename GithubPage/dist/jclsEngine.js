@@ -1,6 +1,7 @@
 import Input from "./core/input.js";
 import Physics from "./physics/physics.js";
 export class Behavior_Instance {
+    static canvas = null;
     static behaviors = [];
     static SCREEN_HEIGHT;
     static SCREEN_WIDTH;
@@ -34,11 +35,12 @@ export default class JCLSEngine {
         if (canvas === null) {
             throw new Error("Canvas not found");
         }
+        Behavior_Instance.canvas = canvas;
         const ctx = canvas.getContext('2d');
         if (ctx === null) {
             throw new Error("Canvas context not found");
         }
-        ctx.imageSmoothingEnabled = false;
+        //ctx.imageSmoothingEnabled = false;
         canvas.width = 800;
         canvas.height = canvas.width / 2;
         let ratio = canvas.width / canvas.height;
@@ -79,6 +81,7 @@ export default class JCLSEngine {
             isPaused = false;
         });
         const Loop = (timestamp) => {
+            //ctx.imageSmoothingEnabled = false;
             currentTime = timestamp;
             const deltaTime = (currentTime - previousTime) / 1000;
             previousTime = currentTime;

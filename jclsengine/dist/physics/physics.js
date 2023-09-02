@@ -73,6 +73,7 @@ export class MTV {
     }
 }
 export class ColliderFunc {
+    /* Sat = Separating Axis Theorem */
     static CalculeSAT(ctx, box_A, box_B, corners_array) {
         let overlap = Number.MAX_VALUE;
         let overlapN = new Vector2();

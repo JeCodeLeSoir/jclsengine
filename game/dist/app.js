@@ -7,6 +7,11 @@ import ShipEffect from "./ShipEffect.js";
 let RunParent = document.getElementById("Run");
 let btnRun = document.getElementById("btn-run");
 btnRun?.addEventListener("click", () => {
+    setTimeout(() => {
+        document.body.addEventListener("click", () => {
+            jcls.Input.LockCursor(jcls.ECursorLock.locked);
+        });
+    }, 10);
     RunParent?.classList.add("hidden");
     let _clip0 = new jcls.Clip();
     _clip0.Load('./assets/musics/gamemusic2.mp3');

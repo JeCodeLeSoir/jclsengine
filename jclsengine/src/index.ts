@@ -12,7 +12,7 @@ import JCLSEngine, {
 import Physics, { Box, Circle, ColliderShap, PhysicsCollider2d, World } from "./physics/physics.js";
 import { Sprite, SpriteRenderer } from "./core/spriteRenderer.js";
 import BehaviorPooling from "./core/behaviorPooling.js";
-import Input, { EInput } from "./core/input.js";
+import Input, { ECursorLock, EInput } from "./core/input.js";
 import Voxel, { EventVoxel, PixelData, Group } from "./core/voxel.js";
 import Tags from "./core/tags.js";
 import MathF from "./utils/mathf.js";
@@ -39,6 +39,7 @@ export {
   Tags,
 
   /* Input */
+  ECursorLock,
   EInput,
   Input
 };

@@ -5,6 +5,7 @@ import Vector2 from "./core/vector2.js";
 import Physics, { PhysicsCollider2d } from "./physics/physics.js";
 
 export class Behavior_Instance {
+  static canvas: HTMLCanvasElement | null = null;
   static behaviors: Behavior[] = [];
 
   static SCREEN_HEIGHT: number;
@@ -45,16 +46,20 @@ export default class JCLSEngine {
 
     const canvas: HTMLCanvasElement | null
       = document.querySelector('canvas');
+
     if (canvas === null) {
       throw new Error("Canvas not found");
     }
+
+    Behavior_Instance.canvas = canvas;
 
     const ctx: CanvasRenderingContext2D | null
       = canvas.getContext('2d');
     if (ctx === null) {
       throw new Error("Canvas context not found");
     }
-    ctx.imageSmoothingEnabled = false;
+
+    //ctx.imageSmoothingEnabled = false;
 
     canvas.width = 800;
     canvas.height = canvas.width / 2;
@@ -111,7 +116,7 @@ export default class JCLSEngine {
     });
 
     const Loop = (timestamp) => {
-      ctx.imageSmoothingEnabled = false;
+      //ctx.imageSmoothingEnabled = false;
       currentTime = timestamp;
       const deltaTime = (currentTime - previousTime) / 1000;
       previousTime = currentTime;

@@ -1,3 +1,4 @@
+import { Behavior_Instance } from "../jclsEngine.js";
 import Vector2 from "./vector2.js";
 export var EInput;
 (function (EInput) {
@@ -8,6 +9,12 @@ export var EInput;
     EInput[EInput["space"] = 4] = "space";
     EInput[EInput["shift"] = 5] = "shift";
 })(EInput || (EInput = {}));
+export var ECursorLock;
+(function (ECursorLock) {
+    ECursorLock[ECursorLock["none"] = 0] = "none";
+    ECursorLock[ECursorLock["locked"] = 1] = "locked";
+    ECursorLock[ECursorLock["confine"] = 2] = "confine";
+})(ECursorLock || (ECursorLock = {}));
 export default class Input {
     static _instance;
     inputs = [];
@@ -17,6 +24,22 @@ export default class Input {
     _mouse_buttons = [];
     static get Instance() {
         return this._instance || (this._instance = new this());
+    }
+    static _cursorLock = ECursorLock.none;
+    static LockCursor(lock) {
+        if (this._cursorLock === lock)
+            return;
+        Input._cursorLock = lock;
+        switch (lock) {
+            case ECursorLock.none:
+                document.exitPointerLock();
+                break;
+            case ECursorLock.locked:
+                Behavior_Instance.canvas?.requestPointerLock();
+                break;
+            case ECursorLock.confine:
+                break;
+        }
     }
     static GetButton(button) {
         return this.Instance._mouse_buttons[button];
@@ -47,10 +70,21 @@ export default class Input {
         document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
         document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
         document.addEventListener('contextmenu', (e) => this._onContextMenu(e));
+        // Move
+        document.addEventListener('mousemove', (e) => this._onMouseMove(e));
         document.addEventListener('pointermove', (e) => this._onPointerMove(e));
         document.addEventListener('pointerup', (e) => this._onPointerUp(e));
         document.addEventListener('pointerdown', (e) => this._onPointerDown(e));
         document.addEventListener('wheel', (e) => this._onMouseWheel(e), { passive: false });
+        //event pointer unlock
+        document.addEventListener('pointerlockchange', (e) => {
+            if (document.pointerLockElement === null) {
+                Input._cursorLock = ECursorLock.none;
+            }
+        }, false);
+        document.addEventListener('pointerlockerror', (e) => {
+            console.error(e);
+        });
     }
     _onMouseWheel(e) {
         this._mouse_wheel = e.deltaY;
@@ -61,25 +95,65 @@ export default class Input {
     _onPointerUp(e) {
         this._mouse_buttons[e.button] = false;
     }
+    test_d = 0;
+    _mouse_last = new Vector2(0, 0);
+    _onMouseMove(e) {
+        if (Input._cursorLock === ECursorLock.locked) {
+        }
+    }
     _onPointerMove(e) {
-        {
-            let x = e.movementX;
-            let y = e.movementY;
-            //clamp -1 to 1
-            x = Math.max(-1, Math.min(1, x));
-            y = Math.max(-1, Math.min(1, y));
-            this._mouse_delta = new Vector2(x, y);
+        const scaleX = 0.4;
+        const scaleY = 0.4;
+        let x = (e.movementX * scaleX);
+        let y = (e.movementY * scaleY);
+        if (x != 0 || y != 0)
+            this._mouse.AddNR(new Vector2(x, y));
+        if (this._mouse_last != this._mouse) {
+            let d = this._mouse_last.Distance(this._mouse);
+            if (d > this.test_d) {
+                this.test_d = d;
+                console.log(d);
+                console.log(this._mouse_last, this._mouse);
+            }
         }
         {
-            if (e.target instanceof HTMLCanvasElement) {
-                let target = e.target;
-                let rect = target.getBoundingClientRect();
-                let scaleX = target.width / rect.width; // relationship bitmap vs. element for x
-                let scaleY = target.height / rect.height; // relationship bitmap vs. element for y
-                let x = (e.clientX - rect.left) * scaleX;
-                let y = (e.clientY - rect.top) * scaleY;
-                this._mouse = new Vector2(x, y);
+            // let x = e.movementX;
+            // let y = e.movementY;
+            //clamp -1 to 1
+            //  x = Math.max(-1, Math.min(1, x));
+            //  y = Math.max(-1, Math.min(1, y));
+            // this._mouse_delta = new Vector2(x, y);
+        }
+        {
+            /*if (e.target instanceof HTMLCanvasElement) {
+              let target = e.target as HTMLCanvasElement;
+              let rect = target.getBoundingClientRect();*/
+            const target = Behavior_Instance.canvas;
+            const rect = target.getBoundingClientRect();
+            const scaleX = target.width / rect.width; // relationship bitmap vs. element for x
+            const scaleY = target.height / rect.height;
+            //console.log(scaleX, scaleY);
+            // relationship bitmap vs. element for y
+            //console.log(e);
+            if (Input._cursorLock === ECursorLock.locked) {
+                /*
+                        let x = (e.movementX * scaleX);
+                        let y = (e.movementY * scaleY);
+          
+                        //console.log("locked");
+          
+                        console.log(x, y);
+          
+                        this._mouse.AddNR(new Vector2(x, y));
+                */
             }
+            else {
+                //console.log("not locked");
+                //let x = (e.clientX - rect.left) * scaleX
+                //let y = (e.clientY - rect.top) * scaleY
+                //this._mouse = new Vector2(x, y);
+            }
+            //}
         }
     }
     _onContextMenu(e) {
