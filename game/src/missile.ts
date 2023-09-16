@@ -61,7 +61,7 @@ export default class Missile extends jcls.Behavior {
   }
 
   Update(deltaTime: number) {
-    if (this.inverted) {
+    /*if (this.inverted) {
       this.position.x -= this.speed * deltaTime;
       if (this.position.x < -this.width / 2) {
         //this.Destroy();
@@ -74,7 +74,7 @@ export default class Missile extends jcls.Behavior {
         //this.Destroy();
         jcls.BehaviorPooling.Instance.Free(this);
       }
-    }
+    }*/
   }
 
   OnDestroy(): void {
