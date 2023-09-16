@@ -545,6 +545,25 @@ _btnGenerate.addEventListener('submit', (e) => {
   );
 });
 
+const _info_form = document.querySelectorAll('#info-form input');
+const _RectInfos = document.querySelector('.RectInfos');
+_info_form.forEach((input) => {
+  input.addEventListener('change', (e) => {
+    if (Rect.LastSelection !== null) {
+
+      Rect.LastSelection.position.x = parseFloat(_RectInfos.querySelector('#x').value);
+      Rect.LastSelection.position.y = parseFloat(_RectInfos.querySelector('#y').value);
+
+      Rect.LastSelection.size.x = parseFloat(_RectInfos.querySelector('#w').value);
+      Rect.LastSelection.size.y = parseFloat(_RectInfos.querySelector('#h').value);
+
+      Rect.LastSelection.Pivot.x = parseFloat(_RectInfos.querySelector('#px').value);
+      Rect.LastSelection.Pivot.y = parseFloat(_RectInfos.querySelector('#py').value);
+
+    }
+  })
+});
+
 const _btnOpenFile = document.querySelector('#OpenFile');
 _btnOpenFile.addEventListener('click', () => OpenFile());
 
@@ -602,3 +621,9 @@ function draw() {
 }
 
 requestAnimationFrame(draw);
+
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});

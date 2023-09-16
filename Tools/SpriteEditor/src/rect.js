@@ -102,6 +102,9 @@ export default class Rect {
         this.size.y = (this.initialSize.y + dy / zoom);
       }
 
+      this.size.x = Math.max(0, this.size.x);
+      this.size.y = Math.max(0, this.size.y);
+
     }
   }
 
