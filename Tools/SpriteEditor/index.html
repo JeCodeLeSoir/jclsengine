@@ -10,38 +10,58 @@
 </head>
 
 <body>
-  <div id="menu">
-    <ul>
-      <li>
-        <button id="OpenFile">
-          Open file Or Open Image
-        </button>
-      </li>
-      <li>
-        <button id="SaveFile">
-          Save file
-        </button>
-      </li>
-    </ul>
-  </div>
-
   <div id="menu-generator">
+
+    <form id="col-lig-form-gen" class="RectInfos hide">
+
+      <h3>
+        Rectangle Info
+      </h3>
+
+      <input type="number" id="w" placeholder="width" value="0">
+      <input type="number" id="h" placeholder="height" value="0">
+
+      <input type="number" id="x" placeholder="x" value="0">
+      <input type="number" id="y" placeholder="y" value="0">
+
+      <input type="number" id="px" placeholder="pivot_x" value="0">
+      <input type="number" id="py" placeholder="pivot_y" value="0">
+
+    </form>
+
     <form id="col-lig-form-gen">
       <h3>
         Generate rect list
       </h3>
+
       <input type="number" id="colonnes" placeholder="colonnes" value="10">
       <input type="number" id="lignes" placeholder="lignes" value="10">
       <input type="number" hidden id="margin" placeholder="margin" value="0">
+
       <button id="generate">
         Generate
       </button>
     </form>
 
-
   </div>
-  <canvas>
-  </canvas>
+  <div class="contain">
+    <div id="menu">
+      <ul>
+        <li>
+          <button id="OpenFile">
+            Open file Or Open Image
+          </button>
+        </li>
+        <li>
+          <button id="SaveFile">
+            Save file
+          </button>
+        </li>
+      </ul>
+    </div>
+    <canvas>
+    </canvas>
+  </div>
   <script type="module" src="./src/app.js"></script>
 </body>
 

@@ -11,6 +11,7 @@ import Input, { ECursorLock, EInput } from "./core/input.js";
 import Voxel, { EventVoxel, PixelData, Group } from "./core/voxel.js";
 import Tags from "./core/tags.js";
 import MathF from "./utils/mathf.js";
+import Camera from "./core/camera.js";
 export { 
 /* Core */
 Behavior, Bounds, Vector2, RandomUtils, Clip, SoundEffect, JCLSEngine, Behavior_Instance, 
@@ -22,5 +23,7 @@ PhysicsCollider2d, World, Physics, Box, Circle, ColliderShap,
 BehaviorPooling, Voxel, PixelData, EventVoxel, Group, MathF, 
 /* tags */
 Tags, 
+/* Camera */
+Camera, 
 /* Input */
 ECursorLock, EInput, Input };

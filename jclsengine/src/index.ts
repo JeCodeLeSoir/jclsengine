@@ -16,6 +16,7 @@ import Input, { ECursorLock, EInput } from "./core/input.js";
 import Voxel, { EventVoxel, PixelData, Group } from "./core/voxel.js";
 import Tags from "./core/tags.js";
 import MathF from "./utils/mathf.js";
+import Camera from "./core/camera.js";
 
 export {
   /* Core */
@@ -37,6 +38,9 @@ export {
 
   /* tags */
   Tags,
+
+  /* Camera */
+  Camera,
 
   /* Input */
   ECursorLock,

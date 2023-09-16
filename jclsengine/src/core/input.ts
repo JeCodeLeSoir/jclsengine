@@ -1,4 +1,5 @@
 import { Behavior_Instance } from "../jclsEngine.js";
+import { PointerLock } from "./pointerLock.js";
 import Vector2 from "./vector2.js";
 
 export enum EInput {
@@ -44,7 +45,12 @@ export default class Input {
         document.exitPointerLock();
         break;
       case ECursorLock.locked:
-        Behavior_Instance.canvas?.requestPointerLock();
+        //unadjustedMovement: true
+
+        PointerLock.requestPointerLock(Behavior_Instance.canvas, {
+          unadjustedMovement: true,
+        })
+
         break;
       case ECursorLock.confine:
         break;
@@ -56,7 +62,7 @@ export default class Input {
   }
 
   static GetMouseCoord(): Vector2 {
-    return this.Instance._mouse;
+    return this.Instance._mouse.Clone();
   }
 
   static GetMouseDelta(): Vector2 {
@@ -102,16 +108,26 @@ export default class Input {
 
     //event pointer unlock
     document.addEventListener('pointerlockchange', (e) => {
-      if (document.pointerLockElement === null) {
-        Input._cursorLock = ECursorLock.none;
+      console.log("pointerlockchange");
+      console.log(e);
+
+      //is locked ?
+      //console.log(document.pointerLockElement);
+      //console.log((Behavior_Instance.canvas as any).pointerLockElement);
+
+      if (document.pointerLockElement === null
+        || document.pointerLockElement === undefined) {
+        if (Input._cursorLock === ECursorLock.locked) {
+          Input._cursorLock = ECursorLock.none;
+          console.log("unlock");
+        }
       }
+
     }, false);
 
     document.addEventListener('pointerlockerror', (e) => {
       console.error(e);
     })
-
-
 
   }
 
@@ -127,88 +143,44 @@ export default class Input {
     this._mouse_buttons[e.button] = false;
   }
 
-  test_d = 0;
-  private _mouse_last: Vector2 = new Vector2(0, 0);
-
-
   private _onMouseMove(e: MouseEvent) {
-    if (Input._cursorLock === ECursorLock.locked) {
 
-    }
   }
 
   private _onPointerMove(e: PointerEvent): any {
-
-
-    const scaleX = 0.4;
-    const scaleY = 0.4;
-
-    let x = (e.movementX * scaleX);
-    let y = (e.movementY * scaleY);
-
-
-    if (x != 0 || y != 0)
-      this._mouse.AddNR(new Vector2(x, y));
-
-    if (this._mouse_last != this._mouse) {
-      let d = this._mouse_last.Distance(this._mouse);
-      if (d > this.test_d) {
-        this.test_d = d;
-        console.log(d);
-
-        console.log(this._mouse_last, this._mouse);
-      }
-    }
-
     {
-      // let x = e.movementX;
-      // let y = e.movementY;
+      let x = e.movementX;
+      let y = e.movementY;
 
       //clamp -1 to 1
-      //  x = Math.max(-1, Math.min(1, x));
-      //  y = Math.max(-1, Math.min(1, y));
+      x = Math.max(-1, Math.min(1, x));
+      y = Math.max(-1, Math.min(1, y));
 
-      // this._mouse_delta = new Vector2(x, y);
+      this._mouse_delta = new Vector2(x, y);
     }
 
     {
-      /*if (e.target instanceof HTMLCanvasElement) {
-        let target = e.target as HTMLCanvasElement;
-        let rect = target.getBoundingClientRect();*/
-
       const target = Behavior_Instance.canvas as HTMLCanvasElement;
       const rect = target.getBoundingClientRect();
 
-      const scaleX = target.width / rect.width;   // relationship bitmap vs. element for x
+      const scaleX = target.width / rect.width;
       const scaleY = target.height / rect.height;
 
-      //console.log(scaleX, scaleY);
-
-      // relationship bitmap vs. element for y
-
-      //console.log(e);
-
       if (Input._cursorLock === ECursorLock.locked) {
-        /*
-                let x = (e.movementX * scaleX);
-                let y = (e.movementY * scaleY);
-  
-                //console.log("locked");
-  
-                console.log(x, y);
-  
-                this._mouse.AddNR(new Vector2(x, y));
-        */
+        let x = (e.movementX * scaleX);
+        let y = (e.movementY * scaleY);
+        this._mouse.AddNR(new Vector2(x, y));
       }
       else {
+        let x = (e.clientX - rect.left) * scaleX
+        let y = (e.clientY - rect.top) * scaleY
 
-        //console.log("not locked");
+        x = x - (Behavior_Instance.SCREEN_WIDTH / 2);
+        y = y - (Behavior_Instance.SCREEN_HEIGHT / 2);
 
-        //let x = (e.clientX - rect.left) * scaleX
-        //let y = (e.clientY - rect.top) * scaleY
-        //this._mouse = new Vector2(x, y);
+        this._mouse = new Vector2(x, y);
       }
-      //}
+
     }
   }
 

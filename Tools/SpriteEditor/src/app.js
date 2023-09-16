@@ -16,10 +16,13 @@ class View {
     this.center = new Vector2();
     this.zoom = ScaleZoom;
 
-    this.drag = false;
+    this.dragCamera = false;
 
     this.img = new Image();
     this.img.src = content;
+
+    this.RectInfos = document.querySelector('.RectInfos');
+
     this.img.onload = () => {
       console.log(this.img.width, this.img.height);
     }
@@ -40,7 +43,7 @@ class View {
     let mouse_canvasY = e.clientY - rect.top;
 
     if (e.button === 1) {
-      this.drag = true;
+      this.dragCamera = true;
       return;
     }
 
@@ -64,16 +67,31 @@ class View {
         return sizeB - sizeA;
       });
       sortedRectSaves = sortedRectSaves.reverse();
+      sortedRectSaves.forEach((rect) => rect.Reset());
       for (let i = 0; i < sortedRectSaves.length; i++) {
+
         sortedRectSaves[i].CheckSelection(
           mouse_canvasX,
           mouse_canvasY,
+          e.clientX, e.clientY,
           this.center,
           this.position,
           this.zoom
         );
 
-        if (sortedRectSaves[i].IsSelect) {
+        if (sortedRectSaves[i] === Rect.LastSelection) {
+
+          this.RectInfos.classList.remove('hide');
+
+          this.RectInfos.querySelector('#x').value = sortedRectSaves[i].position.x;
+          this.RectInfos.querySelector('#y').value = sortedRectSaves[i].position.y;
+
+          this.RectInfos.querySelector('#w').value = sortedRectSaves[i].size.x;
+          this.RectInfos.querySelector('#h').value = sortedRectSaves[i].size.y;
+
+          this.RectInfos.querySelector('#px').value = sortedRectSaves[i].Pivot.x;
+          this.RectInfos.querySelector('#py').value = sortedRectSaves[i].Pivot.y;
+
           this.lastRect = sortedRectSaves[i].Clone();
           return;
         }
@@ -83,15 +101,17 @@ class View {
   }
 
   OnPointerUp(e) {
-    let rect = this.canvas.getBoundingClientRect();
 
-    let mouse_canvasX = e.clientX - rect.left;
-    let mouse_canvasY = e.clientY - rect.top;
-
-    if (e.button === 1) {
-      this.drag = false;
+    if (this.dragCamera == true) {
+      this.dragCamera = false;
       return;
     }
+
+    this.Rects.forEach((rect) => rect.Reset());
+
+    let rect = this.canvas.getBoundingClientRect();
+    let mouse_canvasX = e.clientX - rect.left;
+    let mouse_canvasY = e.clientY - rect.top;
 
     if (e.button === 0
       && this.newRect !== undefined
@@ -106,22 +126,25 @@ class View {
       return;
     }
 
-    if (e.button === 0) {
-      for (let i = 0; i < this.Rects.length; i++) {
-        this.Rects[i].IsSelect = false;
-      }
-      return;
-    }
-
   }
 
   OnPointerMove(e) {
+
+    if (Rect.LastSelection !== null) {
+      this.RectInfos.querySelector('#x').value = Rect.LastSelection.position.x;
+      this.RectInfos.querySelector('#y').value = Rect.LastSelection.position.y;
+      this.RectInfos.querySelector('#w').value = Rect.LastSelection.size.x;
+      this.RectInfos.querySelector('#h').value = Rect.LastSelection.size.y;
+      this.RectInfos.querySelector('#px').value = Rect.LastSelection.Pivot.x;
+      this.RectInfos.querySelector('#py').value = Rect.LastSelection.Pivot.y;
+    }
+
     let rect = this.canvas.getBoundingClientRect();
 
     let mouse_canvasX = e.clientX - rect.left;
     let mouse_canvasY = e.clientY - rect.top;
 
-    if (this.drag) {
+    if (this.dragCamera) {
       this.position.x += e.movementX;
       this.position.y += e.movementY;
     }
@@ -132,14 +155,28 @@ class View {
     }
 
     for (let i = 0; i < this.Rects.length; i++) {
-      this.Rects[i].MoveSelection(
-        new Vector2(e.movementX, e.movementY),
-        this.center,
-        this.zoom,
-        this.img.width,
-        this.img.height
-      );
+      this.Rects[i].Resize(new Vector2(e.clientX, e.clientY), this.center, this.zoom);
+      if (this.Rects[i].IsMovePivot) {
+        this.Rects[i].MovePivot(
+          new Vector2(e.movementX, e.movementY),
+          this.center,
+          this.zoom,
+          this.img.width,
+          this.img.height
+        );
+
+      }
+      else {
+        this.Rects[i].MoveSelection(
+          new Vector2(e.movementX, e.movementY),
+          this.center,
+          this.zoom,
+          this.img.width,
+          this.img.height
+        );
+      }
     }
+
 
   }
 
@@ -240,7 +277,7 @@ class View {
       ctx.fillRect(x, y, 10, 10);*/
     }
     {
-      console.log(rect);
+      //console.log(rect);
       let scale = 3;
       let initialZoom = 100;
 
@@ -262,8 +299,18 @@ class View {
         rect_Relative_p.size.y
       );
 
+
+      const ratio = rect.size.x / rect.size.y;
+
+      //console.log("ratio :" + ratio);
+
+      let preview_w = 400;
+      let preview_h = preview_w / ratio;
+
       ctx.fillStyle = "rgba(250, 0, 229, 0.923)";
-      ctx.fillRect(0, 500, 400, 400);
+      ctx.fillRect(0, 500,
+        preview_w, preview_h
+      );
 
       this.DrawImageRect(
         ctx,
@@ -273,8 +320,8 @@ class View {
           y: 500
         },
         {
-          x: 400,
-          y: 400
+          x: preview_w,
+          y: preview_h
         }
         ,
         {
@@ -289,7 +336,7 @@ class View {
         }
       );
 
-      ctx.drawImage(this.img, 0, 0,
+      ctx.drawImage(this.img, 1, 1,
         this.img.width / scale, this.img.height / scale,
       );
     }
@@ -362,8 +409,6 @@ class View {
     let px = this.position.x + (cs_width / 2) - (w / 2);
     let py = this.position.y + (cs_height / 2) - (h / 2);
 
-
-
     let x = px;
     let y = py;
 
@@ -377,7 +422,6 @@ class View {
 
     let x__ = (localposition.x - this.center.x) / this.zoom
     let y__ = (localposition.y - this.center.y) / this.zoom
-
 
     let w__ = (w / this.zoom) / colonnes;
     let h__ = (h / this.zoom) / lignes;
@@ -409,7 +453,6 @@ class View {
         this.position,
         this.zoom
       );
-
     }
 
     if (this.lastRect !== undefined)
@@ -420,7 +463,6 @@ class View {
     }
   }
 }
-
 
 const canvas = document.querySelector('canvas');
 

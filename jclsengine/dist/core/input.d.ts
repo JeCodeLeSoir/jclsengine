@@ -32,8 +32,6 @@ export default class Input {
     private _onMouseWheel;
     private _onPointerDown;
     private _onPointerUp;
-    test_d: number;
-    private _mouse_last;
     private _onMouseMove;
     private _onPointerMove;
     private _onContextMenu;

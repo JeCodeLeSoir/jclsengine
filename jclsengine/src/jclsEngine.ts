@@ -1,5 +1,6 @@
 import Behavior from "./core/behavior.js";
 import Bounds from "./core/bounds.js";
+import Camera from "./core/camera.js";
 import Input from "./core/input.js";
 import Vector2 from "./core/vector2.js";
 import Physics, { PhysicsCollider2d } from "./physics/physics.js";
@@ -196,11 +197,19 @@ export default class JCLSEngine {
       }*/
 
 
+      let camera = Camera.mainCamera;
 
-      draws.forEach((behavior) =>
-        behavior.GetIsLoaded() && behavior.IsEnabled ?
-          behavior.Draw(ctx, deltaTime) : {}
-      );
+      let x = camera.position.x - (camera.size.x / 2);
+      let y = camera.position.y - (camera.size.y / 2);
+
+      ctx.save()
+      ctx.translate(-x, -y);
+
+      draws.forEach((behavior) => {
+        if (behavior.GetIsLoaded() && behavior.IsEnabled) {
+          behavior.Draw(ctx, deltaTime)
+        }
+      });
 
       /*
         test physic
@@ -210,6 +219,7 @@ export default class JCLSEngine {
       physics.Simulate(ctx, deltaTime);
       Input.Instance.Update(deltaTime);
 
+      ctx.restore()
       /*
        end test physic
       */

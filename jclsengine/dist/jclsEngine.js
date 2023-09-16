@@ -1,3 +1,4 @@
+import Camera from "./core/camera.js";
 import Input from "./core/input.js";
 import Physics from "./physics/physics.js";
 export class Behavior_Instance {
@@ -144,13 +145,22 @@ export default class JCLSEngine {
                 }
               });
             }*/
-            draws.forEach((behavior) => behavior.GetIsLoaded() && behavior.IsEnabled ?
-                behavior.Draw(ctx, deltaTime) : {});
+            let camera = Camera.mainCamera;
+            let x = camera.position.x - (camera.size.x / 2);
+            let y = camera.position.y - (camera.size.y / 2);
+            ctx.save();
+            ctx.translate(-x, -y);
+            draws.forEach((behavior) => {
+                if (behavior.GetIsLoaded() && behavior.IsEnabled) {
+                    behavior.Draw(ctx, deltaTime);
+                }
+            });
             /*
               test physic
             */
             physics.Simulate(ctx, deltaTime);
             Input.Instance.Update(deltaTime);
+            ctx.restore();
             /*
              end test physic
             */

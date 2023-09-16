@@ -133,8 +133,6 @@ export class SpriteRenderer {
             ctx.translate(pivot_x, pivot_y);
             ctx.scale(scale.x, scale.y);
             ctx.translate(-pivot_x, -pivot_y);
-
-
             this.DrawImageRect(
               ctx,
               sprite.image,

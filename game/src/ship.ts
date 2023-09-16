@@ -18,6 +18,8 @@ export default class Ship extends jcls.Behavior {
   private _spriteRenderer: jcls.SpriteRenderer | null = null;
   private _sprite: jcls.Sprite | null = null;
 
+  camera: jcls.Camera;
+
   speed: number;
 
   cooldown: number = 0;
@@ -32,14 +34,19 @@ export default class Ship extends jcls.Behavior {
 
   constructor() {
     super();
-    this.position.x = 25;
-    this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
+    //this.position.x = 25;
+    //this.position.y = jcls.Behavior_Instance.SCREEN_HEIGHT / 2;
+
+    this.position = new jcls.Vector2(0, 0);
+
     this.rotation = 0;
     this.speed = 150;
 
     //this.image = new Image();
     Ship.instance = this;
     console.log("Ship created");
+
+    this.camera = jcls.Camera.mainCamera;
 
     //this.Instantiate(new Missile(), this);
   }
@@ -94,13 +101,20 @@ export default class Ship extends jcls.Behavior {
     if (this.physicsCollider !== null)
       this.physicsCollider.velocity = new jcls.Vector2(0, 0);
 
+    this.camera.position = new jcls.Vector2(
+      this.position.x,
+      this.position.y)
+
     const h = jcls.Behavior_Instance.SCREEN_HEIGHT;
     const w = jcls.Behavior_Instance.SCREEN_WIDTH;
 
-    let mouseCoord = jcls.Input.GetMouseCoord();
+    let mouseCoord = this.camera.ScreenToWorldPoint(jcls.Input.GetMouseCoord());
 
-    let angle = Math.atan2(mouseCoord.y - this.position.y, mouseCoord.x - this.position.x);
-    this.rotation = (angle) * 180 / Math.PI;
+    let distance = this.position.Distance(mouseCoord);
+    if (distance > 2.5) {
+      let angle = Math.atan2(mouseCoord.y - this.position.y, mouseCoord.x - this.position.x);
+      this.rotation = (angle) * 180 / Math.PI;
+    }
 
     // GetAxis(jcls.EInput.forward,
     // jcls.EInput.backward,
@@ -118,10 +132,11 @@ export default class Ship extends jcls.Behavior {
     normaldirection.x = jcls.MathF.Clamp(direction.x, -1, 1);
     normaldirection.y = jcls.MathF.Clamp(direction.y, -1, 1);
 
-    direction = direction.Normalized;
+    //direction = direction.Normalized;
     direction.MultiplyNR(this.speed * deltaTime);
 
-    this.position.AddNR(direction);
+    this.position.AddNR(normaldirection);
+
 
     /*if (vertical !== 0) {
       // add forward vector
@@ -178,10 +193,10 @@ export default class Ship extends jcls.Behavior {
   }
 
   Draw(ctx: CanvasRenderingContext2D, deltaTime: number) {
-    let mouseCoord = jcls.Input.GetMouseCoord();
+    let mouseCoord = this.camera.ScreenToWorldPoint(jcls.Input.GetMouseCoord());
     /* debug mouse coord */
     ctx.beginPath();
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "green";
     ctx.arc(mouseCoord.x, mouseCoord.y, 5, 0, 2 * Math.PI);
     ctx.fill();
 
@@ -200,15 +215,11 @@ export default class Ship extends jcls.Behavior {
     ctx.lineTo(this.position.x + this.Right.x * 50, this.position.y + this.Right.y * 50);
     ctx.stroke();
 
-
-
-
-
-    let x = Math.round(this.position.x)
-    let y = Math.round(this.position.y)
+    //let x = Math.round(this.position.x)
+    //let y = Math.round(this.position.y)
 
     this._spriteRenderer?.Draw(ctx,
-      new jcls.Vector2(x, y),
+      this.position,
       this.rotation,
       new jcls.Vector2(this.width, this.height),
     );
