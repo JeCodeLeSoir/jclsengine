@@ -38,6 +38,9 @@ class View {
   }
 
   OnPointerDown(e) {
+
+    Rect.LastSelection = null;
+
     let rect = this.canvas.getBoundingClientRect();
     let mouse_canvasX = e.clientX - rect.left;
     let mouse_canvasY = e.clientY - rect.top;
@@ -118,11 +121,14 @@ class View {
     if (e.button === 0
       && this.newRect !== undefined
     ) {
+
       this.newRect.Create(
+        this.Rects.length + 1,
         this.center,
         this.position,
         this.zoom
       );
+
       this.Rects.push(this.newRect);
       this.newRect = undefined;
       return;
@@ -132,13 +138,27 @@ class View {
 
   OnPointerMove(e) {
 
+
+
+
+
     if (Rect.LastSelection !== null) {
+
+
+
       this.RectInfos.querySelector('#x').value = Rect.LastSelection.position.x;
       this.RectInfos.querySelector('#y').value = Rect.LastSelection.position.y;
       this.RectInfos.querySelector('#w').value = Rect.LastSelection.size.x;
       this.RectInfos.querySelector('#h').value = Rect.LastSelection.size.y;
       this.RectInfos.querySelector('#px').value = Rect.LastSelection.Pivot.x;
       this.RectInfos.querySelector('#py').value = Rect.LastSelection.Pivot.y;
+
+
+      let pivotx = (Rect.LastSelection.Pivot.x / (Rect.LastSelection.size.x * this.zoom)) / 0.5;
+      let pivoty = (Rect.LastSelection.Pivot.y / (Rect.LastSelection.size.y * this.zoom)) / 0.5;
+
+      this.RectInfos.querySelector('#pxa').value = pivotx;
+      this.RectInfos.querySelector('#pya').value = pivoty;
     }
 
     let rect = this.canvas.getBoundingClientRect();
@@ -214,6 +234,9 @@ class View {
         y: Math.round(rect_Relative.position.y),
         w: Math.round(rect_Relative.size.x),
         h: Math.round(rect_Relative.size.y),
+        px: Math.round(rect_Relative.pivot.x),
+        py: Math.round(rect_Relative.pivot.y),
+        id: rect.id
       };
 
       adjustedRects.push(adjustedRect);
@@ -358,6 +381,10 @@ class View {
     let rectw = (rect.size.x * initialZoom) / scale;
     let recth = (rect.size.y * initialZoom) / scale;
 
+
+    let pivotx = (rect.Pivot.x / (rect.size.x * this.zoom)) / 0.5;
+    let pivoty = (rect.Pivot.y / (rect.size.y * this.zoom)) / 0.5;
+
     return {
       position: {
         x: relativeX,
@@ -366,6 +393,10 @@ class View {
       size: {
         x: rectw,
         y: recth
+      },
+      pivot: {
+        x: pivotx,
+        y: pivoty
       }
     }
   }
@@ -388,6 +419,8 @@ class View {
     lignes,
     margin,
   ) {
+
+    Rect.LastSelection = null;
 
     let rects = [];
 
@@ -439,18 +472,33 @@ class View {
         rect.size.x = w__;
         rect.size.y = h__;
 
+        rect.id = i + j * colonnes;
+
         rects.push(rect);
       }
     }
 
-    this.Rects = rects;
+    this.Rects = rects.sort((a, b) => {
+      return a.id - b.id;
+    });
   }
 
   Draw(ctx) {
     this.DrawImage(ctx);
 
     for (let i = 0; i < this.Rects.length; i++) {
+      if (this.Rects[i] === Rect.LastSelection)
+        continue;
+
       this.Rects[i].Draw(ctx,
+        this.center,
+        this.position,
+        this.zoom
+      );
+    }
+
+    if (Rect.LastSelection !== null) {
+      Rect.LastSelection.Draw(ctx,
         this.center,
         this.position,
         this.zoom
@@ -530,6 +578,23 @@ function SaveFile() {
 
 function draw() {
   requestAnimationFrame(draw);
+
+  if (Rect.LastSelection !== null) {
+    //delete rect
+    if (Instance_View.Inputs["Delete"] === true) {
+      Instance_View.Rects = Instance_View.Rects.filter((rect) => {
+        return rect !== Rect.LastSelection;
+      });
+
+      //recalculate id
+      Instance_View.Rects.forEach((rect, index) => {
+        rect.id = index + 1;
+      });
+
+      Rect.LastSelection = null;
+    }
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (Instance_View !== undefined) {
     Instance_View.Draw(ctx);

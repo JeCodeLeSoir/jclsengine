@@ -5,6 +5,7 @@ export default class Rect {
   static LastSelection = null;
 
   constructor() {
+    this.id = 0;
     this.IsDrag = false;
     this.IsResize = false;
 
@@ -28,8 +29,6 @@ export default class Rect {
     this.IsDrag = false;
     this.IsResize = false;
     this.IsMovePivot = false;
-
-    Rect.LastSelection = null;
   }
 
   CheckSelection(mouse_x, mouse_y, clientX, clientY, center, position, zoom) {
@@ -126,7 +125,10 @@ export default class Rect {
     }
   }
 
-  Create(center, position, zoom) {
+  Create(id, center, position, zoom) {
+
+    this.id = id;
+
     let localposition = { x: 0, y: 0 };
 
     localposition.x = this.Start.x - position.x;
@@ -239,6 +241,16 @@ export default class Rect {
       dataRect.rw,
       dataRect.rh
     );
+
+    //draw text id
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "12px Arial";
+    ctx.fillText(
+      this.id,
+      //center x
+      dataRect.rx + position.x + dataRect.rw / 2 - 5,
+      dataRect.ry + position.y + 15
+    );
   }
 
   DrawResizeHandles(ctx, center, position, zoom) {
@@ -298,6 +310,7 @@ export default class Rect {
   Clone() {
     let rect = new Rect();
 
+    rect.id = this.id;
     rect.IsResize = this.IsResize;
     rect.Start = this.Start;
     rect.End = this.End;

@@ -57,8 +57,23 @@
    min-height: 250px;
  }
 
+ #menu-generator>#info-form.hide {
+   display: none;
+ }
+
  #menu-generator>#col-lig-form-gen.hide {
    display: none;
+ }
+
+ #menu-generator>#info-form {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+ }
+
+ #menu-generator>#info-form>input {
+   margin-bottom: 10px;
  }
 
  #menu-generator>#col-lig-form-gen {
