@@ -5,7 +5,7 @@ const ScaleZoom = 100;
 
 class View {
 
-  constructor(canvas, content) {
+  constructor(canvas, content = "") {
     this.canvas = canvas;
     this.Inputs = [];
     this.Rects = [];
@@ -19,7 +19,14 @@ class View {
     this.dragCamera = false;
 
     this.img = new Image();
-    this.img.src = content;
+
+    if (content === "") {
+      this.img.width = 1024;
+      this.img.height = 1024;
+    }
+    else {
+      this.img.src = content;
+    }
 
     this.RectInfos = document.querySelector('.RectInfos');
 
@@ -607,7 +614,7 @@ const _btnSaveFile = document.querySelector('#SaveFile');
 _btnSaveFile.addEventListener('click', () => SaveFile());
 
 let Instance_View = undefined;
-Instance_View = new View(canvas, "http://localhost/SpaceTest/autre/pngfind.com-explosion-sprite-png-4289579.png");
+Instance_View = new View(canvas);
 
 function OpenFile() {
   let input = document.createElement('input');

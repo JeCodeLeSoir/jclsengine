@@ -1,0 +1,67 @@
+.menu-bar {
+  position: sticky;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: row;
+
+  height: 50px;
+  width: 100%;
+
+  background-color: rgb(255, 255, 255);
+}
+
+.menu-bar>* {
+  margin: 0 5px;
+  padding: 0;
+}
+
+.btn {
+  background-color: #236822;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.btn>img {
+  width: 400px;
+  height: 400px;
+  margin-right: 5px;
+
+  object-fit: cover;
+}
+
+.btn>p {
+  margin: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-by-icon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-by-icon>* {
+  margin: 0 5px;
+}
+
+.Github {
+  color: #ffffff;
+  /* svg */
+  fill: #ffffff;
+}
