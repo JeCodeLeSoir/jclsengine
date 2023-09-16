@@ -484,58 +484,33 @@ class View {
   }
 
   DrawGrid(ctx) {
-    const opacity = 0.5; // Opacité de la grille
-    const lineWidth = 2; // Épaisseur de la ligne de la grille
+    const space = 50;
 
-    ctx.strokeStyle = `rgba(204, 204, 204, ${opacity})`;
-    ctx.lineWidth = lineWidth;
+    let top = ((this.position.y + 5) % space);
+    let left = ((this.position.x + 10) % space);
 
-    let gridSize = 25;
+    let width = this.canvas.width;
+    let height = this.canvas.height;
 
-    let mw = this.img.width / 100;
-    let mh = this.img.height / 100;
 
-    //console.log(this.zoom);
+    ctx.clearRect(0, 0, width, height);
 
-    //let w = zoom * mw
-    //let h = zoom * mh
-
-    //let zoomedImageWidth = imgLoad.width * zoom;
-    //let zoomedImageHeight = imgLoad.height * zoom;
-
-    let w = mw;
-    let h = mh;
-
-    let centerX = canvas.width / 2 - (w * (this.zoom)) / 2;
-    let centerY = canvas.height / 2 - (h * (this.zoom)) / 2;
-
-    let zoomedImageWidth = Math.round(w * (this.zoom))
-    let zoomedImageHeight = Math.round(h * (this.zoom))
-
-    let numGridCols = Math.ceil(zoomedImageWidth / gridSize);
-    let numGridRows = Math.ceil(zoomedImageHeight / gridSize);
-
-    let startX = Math.round(centerX + this.position.x);
-    let startY = Math.round(centerY + this.position.y);
-
-    for (let col = 0; col < numGridCols; col++) {
-      const x = Math.round(startX + col * gridSize);
+    for (let i = top; i < height; i += space) {
       ctx.beginPath();
-      ctx.moveTo(x, startY);
-      ctx.lineTo(x, startY + zoomedImageHeight);
+      ctx.moveTo(0, i);
+      ctx.lineTo(width, i);
+      ctx.strokeStyle = '#ccc';
       ctx.stroke();
     }
 
-    for (let row = 0; row < numGridRows; row++) {
-      const y = Math.round(startY + row * gridSize);
+    for (let i = left; i < width; i += space) {
       ctx.beginPath();
-      ctx.moveTo(startX, y);
-      ctx.lineTo(startX + zoomedImageWidth, y);
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, height);
+      ctx.strokeStyle = '#ccc';
       ctx.stroke();
     }
 
-    //console.log("numGridCols :" + numGridCols);
-    //console.log("numGridRows :" + numGridRows);
   }
 
   Draw(ctx) {
