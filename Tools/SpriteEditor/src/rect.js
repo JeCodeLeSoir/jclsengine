@@ -31,6 +31,18 @@ export default class Rect {
     this.IsMovePivot = false;
   }
 
+  ReCalculeRect() {
+    if (this.size.x < 0) {
+      this.position.x += this.size.x;
+      this.size.x = Math.abs(this.size.x);
+    }
+
+    if (this.size.y < 0) {
+      this.position.y += this.size.y;
+      this.size.y = Math.abs(this.size.y);
+    }
+  }
+
   CheckSelection(mouse_x, mouse_y, clientX, clientY, center, position, zoom) {
     if (!this.CheckSelectionResize(mouse_x, mouse_y, clientX, clientY, center, position, zoom)) {
       const dataRect = this.DataRect(center, zoom);
@@ -102,9 +114,6 @@ export default class Rect {
         this.size.y = (this.initialSize.y + dy / zoom);
       }
 
-      this.size.x = Math.max(0, this.size.x);
-      this.size.y = Math.max(0, this.size.y);
-
     }
   }
 
@@ -151,6 +160,8 @@ export default class Rect {
       x: 0,
       y: 0
     };
+
+    this.ReCalculeRect();
   }
 
   DataRect(center, zoom) {
@@ -213,6 +224,7 @@ export default class Rect {
   }
 
   DrawCreate(ctx) {
+    ctx.save();
     ctx.strokeStyle = "#00ff00";
     ctx.lineWidth = 2;
     ctx.strokeRect(
@@ -221,6 +233,7 @@ export default class Rect {
       (this.End.x - this.Start.x),
       (this.End.y - this.Start.y)
     );
+    ctx.restore();
   }
 
   Draw(ctx, center, position, zoom) {
@@ -231,6 +244,9 @@ export default class Rect {
   DrawRect(ctx, center, position, zoom) {
 
     const dataRect = this.DataRect(center, zoom);
+
+    ctx.save();
+
 
     if (Rect.LastSelection === this)
       ctx.strokeStyle = "#0000ff";
@@ -252,8 +268,12 @@ export default class Rect {
       this.id,
       //center x
       dataRect.rx + position.x + dataRect.rw / 2 - 5,
+
       dataRect.ry + position.y + 15
+
     );
+
+    ctx.restore();
   }
 
   DrawResizeHandles(ctx, center, position, zoom) {

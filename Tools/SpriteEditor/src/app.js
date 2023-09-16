@@ -113,6 +113,7 @@ class View {
     }
 
     this.Rects.forEach((rect) => rect.Reset());
+    this.Rects.forEach((rect) => rect.ReCalculeRect());
 
     let rect = this.canvas.getBoundingClientRect();
     let mouse_canvasX = e.clientX - rect.left;
@@ -492,14 +493,16 @@ class View {
     let width = this.canvas.width;
     let height = this.canvas.height;
 
+    ctx.save();
 
     ctx.clearRect(0, 0, width, height);
+
+    ctx.strokeStyle = '#b7b7b7';
 
     for (let i = top; i < height; i += space) {
       ctx.beginPath();
       ctx.moveTo(0, i);
       ctx.lineTo(width, i);
-      ctx.strokeStyle = '#ccc';
       ctx.stroke();
     }
 
@@ -507,9 +510,10 @@ class View {
       ctx.beginPath();
       ctx.moveTo(i, 0);
       ctx.lineTo(i, height);
-      ctx.strokeStyle = '#ccc';
       ctx.stroke();
     }
+
+    ctx.restore();
 
   }
 
