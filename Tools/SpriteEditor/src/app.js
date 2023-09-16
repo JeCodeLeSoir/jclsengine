@@ -145,7 +145,7 @@ class View {
 
     if (Rect.LastSelection !== null) {
 
-
+      this.RectInfos.querySelector('#name').value = Rect.LastSelection.name;
 
       this.RectInfos.querySelector('#x').value = Rect.LastSelection.position.x;
       this.RectInfos.querySelector('#y').value = Rect.LastSelection.position.y;
@@ -237,7 +237,8 @@ class View {
         h: Math.round(rect_Relative.size.y),
         px: Math.round(rect_Relative.pivot.x),
         py: Math.round(rect_Relative.pivot.y),
-        id: rect.id
+        id: rect.id,
+        name: rect.name
       };
 
       adjustedRects.push(adjustedRect);
@@ -485,7 +486,9 @@ class View {
   }
 
   DrawGrid(ctx) {
-    const space = 50;
+    /*let space = 50;
+
+    space = (space / 100) * this.zoom;
 
     let top = ((this.position.y + 5) % space);
     let left = ((this.position.x + 10) % space);
@@ -494,9 +497,7 @@ class View {
     let height = this.canvas.height;
 
     ctx.save();
-
     ctx.clearRect(0, 0, width, height);
-
     ctx.strokeStyle = '#b7b7b7';
 
     for (let i = top; i < height; i += space) {
@@ -505,16 +506,14 @@ class View {
       ctx.lineTo(width, i);
       ctx.stroke();
     }
-
     for (let i = left; i < width; i += space) {
       ctx.beginPath();
       ctx.moveTo(i, 0);
       ctx.lineTo(i, height);
       ctx.stroke();
     }
-
     ctx.restore();
-
+*/
   }
 
   Draw(ctx) {
@@ -585,6 +584,8 @@ const _RectInfos = document.querySelector('.RectInfos');
 _info_form.forEach((input) => {
   input.addEventListener('change', (e) => {
     if (Rect.LastSelection !== null) {
+
+      Rect.LastSelection.name = _RectInfos.querySelector('#name').value;
 
       Rect.LastSelection.position.x = parseFloat(_RectInfos.querySelector('#x').value);
       Rect.LastSelection.position.y = parseFloat(_RectInfos.querySelector('#y').value);

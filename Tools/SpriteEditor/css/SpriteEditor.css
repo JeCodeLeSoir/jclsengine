@@ -55,6 +55,8 @@
 
    min-width: 250px;
    min-height: 250px;
+
+   user-select: none;
  }
 
  #menu-generator>#info-form.hide {

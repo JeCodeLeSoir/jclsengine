@@ -14,6 +14,8 @@ export default class Rect {
     this.IsMovePivot = false;
     this.Pivot = new Vector2();
 
+    this.name = "";
+
 
     this.Start = new Vector2();
     this.End = new Vector2();
@@ -140,6 +142,7 @@ export default class Rect {
   Create(id, center, position, zoom) {
 
     this.id = id;
+    this.name = "#" + id;
 
     let localposition = { x: 0, y: 0 };
 
@@ -262,15 +265,27 @@ export default class Rect {
     );
 
     //draw text id
+
+    const fontSize = (12 / 100) * zoom;
+
     ctx.fillStyle = "#ffffff";
-    ctx.font = "12px Arial";
+    ctx.font = fontSize + "px Arial";
     ctx.fillText(
       this.id,
       //center x
       dataRect.rx + position.x + dataRect.rw / 2 - 5,
+      dataRect.ry + position.y + (15 / 100) * zoom
+    );
 
-      dataRect.ry + position.y + 15
+    //draw text name
 
+    const textWidth = ctx.measureText(this.name).width;
+
+    ctx.fillText(
+      this.name,
+      //center x
+      dataRect.rx + position.x + dataRect.rw / 2 - textWidth / 2,
+      dataRect.ry + position.y + dataRect.rh - (5 / 100) * zoom
     );
 
     ctx.restore();
