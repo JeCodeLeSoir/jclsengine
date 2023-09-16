@@ -62,12 +62,14 @@ class View {
 
     if (e.button === 0) {
       let sortedRectSaves = [...this.Rects].sort((a, b) => {
-        const sizeA = a.size.w * a.size.h;
-        const sizeB = b.size.w * b.size.h;
+        const sizeA = a.size.x * a.size.y;
+        const sizeB = b.size.x * b.size.y;
         return sizeB - sizeA;
       });
+
       sortedRectSaves = sortedRectSaves.reverse();
       sortedRectSaves.forEach((rect) => rect.Reset());
+
       for (let i = 0; i < sortedRectSaves.length; i++) {
 
         sortedRectSaves[i].CheckSelection(
